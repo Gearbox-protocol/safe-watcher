@@ -123,13 +123,20 @@ class SafeWatcher {
       !MULTISEND_CALL_ONLY.has(detailed.to.toLowerCase() as Address) &&
       detailed.operation !== 0;
 
-    await this.#notificationSender?.notify({
-      type: isMalicious ? "malicious" : "created",
-      chainPrefix: this.#prefix,
-      safe: this.#safe,
-      tx: detailed,
-      pending,
-    });
+    try {
+      await this.#notificationSender?.notify({
+        type: isMalicious ? "malicious" : "created",
+        chainPrefix: this.#prefix,
+        safe: this.#safe,
+        tx: detailed,
+        pending,
+      });
+    } catch (error) {
+      this.#logger?.error(
+        { txHash: tx.safeTxHash, error },
+        "failed to send notification",
+      );
+    }
   }
 
   async #processTxUpdate(
