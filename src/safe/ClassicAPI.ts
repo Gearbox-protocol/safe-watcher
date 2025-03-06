@@ -95,6 +95,7 @@ const APIS: Record<string, string> = {
   eth: "https://safe-transaction-mainnet.safe.global",
   gor: "https://safe-transaction-goerli.safe.global",
   oeth: "https://safe-transaction-optimism.safe.global",
+  sep: "https://safe-transaction-sepolia.safe.global",
 };
 
 export class ClassicAPI extends BaseApi implements ISafeAPI {
@@ -148,7 +149,7 @@ export class ClassicAPI extends BaseApi implements ISafeAPI {
   }
 
   private get apiURL(): string {
-    const api = APIS[this.prefix];
+    let api = APIS[this.prefix];
     if (!api) {
       throw new Error(`no API URL for chain '${this.prefix}'`);
     }

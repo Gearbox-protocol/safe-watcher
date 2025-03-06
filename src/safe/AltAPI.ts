@@ -124,9 +124,10 @@ const CHAIN_IDS: Record<string, number> = {
   eth: 1,
   gor: 5,
   oeth: 10,
+  sep: 11155111,
 };
 
-function normalizeLisited(tx: ListedTx): ListedSafeTx {
+function normalizeListed(tx: ListedTx): ListedSafeTx {
   const { safeTxHash } = parseTxId(tx.id);
   return {
     safeTxHash,
@@ -142,7 +143,7 @@ function normalizeDetailed(tx: Transaction): SafeTx<Address> {
   return {
     safeTxHash,
     nonce: tx.detailedExecutionInfo.nonce,
-    to: tx.txInfo.to.value,
+    to: tx.txData.to.value,
     operation: tx.txData.operation,
     proposer: tx.detailedExecutionInfo.confirmations?.[0].signer.value ?? "0x0",
     confirmations:
@@ -166,12 +167,12 @@ export class AltAPI extends BaseApi implements ISafeAPI {
         break;
       }
     } while (url);
-    return results.map(normalizeLisited);
+    return results.map(normalizeListed);
   }
 
   public async fetchLatest(): Promise<ListedSafeTx[]> {
     const data = await this.#fetchList();
-    return (data.results.map(tx => tx.transaction) ?? []).map(normalizeLisited);
+    return (data.results.map(tx => tx.transaction) ?? []).map(normalizeListed);
   }
 
   public async fetchDetailed(safeTxHash: Hash): Promise<SafeTx<Address>> {

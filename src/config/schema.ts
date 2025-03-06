@@ -36,6 +36,10 @@ export const Schema = z.object({
    */
   telegramChannelId: z.string(),
   /**
+   * Slack webhook URL for notifications (optional)
+   */
+  slackWebhookUrl: z.string().url().optional(),
+  /**
    * Prefixed safe addresses to watch, e.g. `eth:0x11111`
    */
   safeAddresses: z.array(PrefixedAddress).min(1),
