@@ -1,6 +1,7 @@
 import type { Address, Hash } from "viem";
 
 import { BaseApi } from "./BaseApi.js";
+import { APIS } from "./constants.js";
 import type { ISafeAPI, ListedSafeTx, SafeTx } from "./types.js";
 
 // export interface SafeMultisigTransactionResponse {
@@ -89,13 +90,6 @@ function normalizeDetailed(tx: SafeMultisigTransaction): SafeTx<Address> {
     isExecuted: tx.isExecuted,
   };
 }
-
-const APIS: Record<string, string> = {
-  arb1: "https://safe-transaction-arbitrum.safe.global",
-  eth: "https://safe-transaction-mainnet.safe.global",
-  gor: "https://safe-transaction-goerli.safe.global",
-  oeth: "https://safe-transaction-optimism.safe.global",
-};
 
 export class ClassicAPI extends BaseApi implements ISafeAPI {
   readonly #txs = new Map<Hash, SafeMultisigTransaction>();
