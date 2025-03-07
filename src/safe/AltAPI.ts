@@ -1,6 +1,7 @@
 import type { Address, Hash, Hex } from "viem";
 
 import { BaseApi } from "./BaseApi.js";
+import { CHAIN_IDS } from "./constants.js";
 import type { ISafeAPI, ListedSafeTx, SafeTx } from "./types.js";
 
 type TxID = `multisig_${Address}_${Hash}`;
@@ -119,14 +120,6 @@ function parseTxId(id: TxID): ParsedTxId {
   return { multisig: multisig as Address, safeTxHash: safeTxHash as Hash };
 }
 
-const CHAIN_IDS: Record<string, number> = {
-  arb1: 42161,
-  eth: 1,
-  gor: 5,
-  oeth: 10,
-  sep: 11155111,
-};
-
 function normalizeListed(tx: ListedTx): ListedSafeTx {
   const { safeTxHash } = parseTxId(tx.id);
   return {
@@ -202,14 +195,14 @@ export class AltAPI extends BaseApi implements ISafeAPI {
   }
 
   private get chainId(): number {
-    const chainId = CHAIN_IDS[this.prefix];
+    const chainId = CHAIN_IDS[this.prefix.trim()];
     if (!chainId) {
-      throw new Error(`no chain id for prefix '${this.prefix}'`);
+      throw new Error(`no chain id for prefix '${this.prefix.trim()}'`);
     }
     return chainId;
   }
 
   private get apiURL(): string {
-    return `https://safe-client.safe.global/v1/chains/${this.chainId}`;
+    return `https://gateway.safe.rootstock.io/v1/chains/${this.chainId}`;
   }
 }

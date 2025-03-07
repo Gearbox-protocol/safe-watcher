@@ -1,6 +1,7 @@
 import type { Address, Hash } from "viem";
 
 import { BaseApi } from "./BaseApi.js";
+import { APIS } from "./constants.js";
 import type { ISafeAPI, ListedSafeTx, SafeTx } from "./types.js";
 
 // export interface SafeMultisigTransactionResponse {
@@ -90,14 +91,6 @@ function normalizeDetailed(tx: SafeMultisigTransaction): SafeTx<Address> {
   };
 }
 
-const APIS: Record<string, string> = {
-  arb1: "https://safe-transaction-arbitrum.safe.global",
-  eth: "https://safe-transaction-mainnet.safe.global",
-  gor: "https://safe-transaction-goerli.safe.global",
-  oeth: "https://safe-transaction-optimism.safe.global",
-  sep: "https://safe-transaction-sepolia.safe.global",
-};
-
 export class ClassicAPI extends BaseApi implements ISafeAPI {
   readonly #txs = new Map<Hash, SafeMultisigTransaction>();
 
@@ -149,9 +142,9 @@ export class ClassicAPI extends BaseApi implements ISafeAPI {
   }
 
   private get apiURL(): string {
-    let api = APIS[this.prefix];
+    let api = APIS[this.prefix.trim()];
     if (!api) {
-      throw new Error(`no API URL for chain '${this.prefix}'`);
+      throw new Error(`no API URL for chain '${this.prefix.trim()}'`);
     }
     return api;
   }

@@ -1,5 +1,6 @@
 import type { Logger } from "pino";
 import type { Address } from "viem";
+import { getAddress } from "viem";
 
 import type { PrefixedAddress } from "../config/index.js";
 import { parsePrefixedAddress } from "../config/index.js";
@@ -13,7 +14,7 @@ export abstract class BaseApi {
 
   constructor(safe: PrefixedAddress) {
     const [prefix, address] = parsePrefixedAddress(safe);
-    this.address = address;
+    this.address = getAddress(address);
     this.prefix = prefix;
     this.logger = logger.child({ prefix, address });
   }

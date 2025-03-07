@@ -28,7 +28,6 @@ async function run() {
       new Slack({
         slackBotToken: config.slackBotToken,
         slackChannelId: config.slackChannelId,
-        safeURL: config.safeURL,
       }),
     );
     logger.info("Added notifier Slack");

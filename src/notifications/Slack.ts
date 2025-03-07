@@ -1,10 +1,10 @@
 import { WebClient } from "@slack/web-api";
 
 import logger from "../logger.js";
+import { SAFE_API_URLS } from "../safe/constants.js";
 import type { Event, INotifier } from "../types.js";
 
 export interface SlackOptions {
-  safeURL: string;
   slackBotToken: string;
   slackChannelId: string;
 }
@@ -17,12 +17,10 @@ interface SlackMessage {
 export class Slack implements INotifier {
   readonly #apiToken: string;
   readonly #channelId: string;
-  readonly #safeURL: string;
 
   constructor(opts: SlackOptions) {
     this.#apiToken = opts.slackBotToken;
     this.#channelId = opts.slackChannelId;
-    this.#safeURL = opts.safeURL;
   }
 
   public async send(event: Event): Promise<void> {
@@ -71,7 +69,7 @@ export class Slack implements INotifier {
               type: "plain_text",
               text: "View Transaction",
             },
-            url: `${this.#safeURL}/${chainPrefix}:${safe}/transactions/queue`,
+            url: `${SAFE_API_URLS[chainPrefix.trim()]}/${chainPrefix.trim()}:${safe}/transactions/queue`,
           },
         ],
       },

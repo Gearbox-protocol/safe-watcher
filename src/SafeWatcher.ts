@@ -1,3 +1,4 @@
+import { toChecksumAddress } from "@rsksmart/rsk-utils";
 import type { Logger } from "pino";
 import type { Address, Hash } from "viem";
 
@@ -167,14 +168,27 @@ class SafeWatcher {
     });
   }
 
+  #checkSumAddress(address: Address): Address {
+    let checksumedAddress = address;
+    if (this.#prefix.trim() === "rsk") {
+      checksumedAddress = toChecksumAddress(address, 30);
+    } else if (this.#prefix.trim() === "trsk") {
+      checksumedAddress = toChecksumAddress(address, 31);
+    }
+    return checksumedAddress;
+  }
+
   async #fetchDetailed(safeTxHash: Hash): Promise<SafeTx<Signer>> {
     const tx = await this.#api.fetchDetailed(safeTxHash);
     return {
       ...tx,
-      proposer: { address: tx.proposer, name: this.#signers[tx.proposer] },
+      proposer: {
+        address: tx.proposer,
+        name: this.#signers[this.#checkSumAddress(tx.proposer)],
+      },
       confirmations: tx.confirmations.map(c => ({
         address: c,
-        name: this.#signers[c],
+        name: this.#signers[this.#checkSumAddress(c)],
       })),
     };
   }

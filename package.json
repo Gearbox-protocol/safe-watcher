@@ -19,6 +19,7 @@
     "test": "vitest"
   },
   "dependencies": {
+    "@rsksmart/rsk-utils": "^2.0.5",
     "@slack/web-api": "^7.8.0",
     "@vlad-yakovlev/telegram-md": "^2.0.0",
     "abitype": "^1.0.8",
