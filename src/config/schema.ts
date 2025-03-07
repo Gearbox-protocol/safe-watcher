@@ -3,10 +3,10 @@ import { z } from "zod";
 
 import { SafeAPIMode } from "../safe/schema.js";
 
-export type PrefixedAddress = `${string}:0x${string}`;
+export type PrefixedAddress = `${string}: ${string}:0x${string}`;
 
 export const PrefixedAddress = z.string().transform((val, ctx) => {
-  const regex = /^[a-zA-Z0-9]+:0x[a-fA-F0-9]{40}$/;
+  const regex = /^[a-zA-Z0-9]+: [a-zA-Z0-9]+:0x[a-fA-F0-9]{40}$/;
 
   if (!regex.test(val)) {
     ctx.addIssue({

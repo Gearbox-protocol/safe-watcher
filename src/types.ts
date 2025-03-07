@@ -5,6 +5,7 @@ import type { ListedSafeTx, SafeTx, Signer } from "./safe/index.js";
 export type EventType = "created" | "updated" | "executed" | "malicious";
 
 export interface Event {
+  name: string;
   chainPrefix: string;
   safe: Address;
   type: EventType;
