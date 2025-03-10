@@ -16,7 +16,7 @@ import { MULTISEND_CALL_ONLY, SafeApiWrapper } from "./safe/index.js";
 import type { INotificationSender } from "./types.js";
 
 interface SafeWatcherOptions {
-  safe: PrefixedAddress;
+  safe: Partial<Record<PrefixedAddress, string>>;
   signers?: Partial<Record<Address, string>>;
   notifier?: INotificationSender;
   api?: SafeAPIMode;
@@ -24,7 +24,7 @@ interface SafeWatcherOptions {
 
 class SafeWatcher {
   readonly #prefix: string;
-  readonly #safe: Address;
+  readonly #safe: `0x${string}`;
   readonly #name: string;
   readonly #notificationSender?: INotificationSender;
   readonly #logger: Logger;
@@ -35,14 +35,20 @@ class SafeWatcher {
   #interval?: NodeJS.Timeout;
 
   constructor(opts: SafeWatcherOptions) {
-    const [prefix, address, name] = parsePrefixedAddress(opts.safe);
+    const [prefixedAddress, alias] = Object.entries(opts.safe)[0];
+    const [prefix, address] = parsePrefixedAddress(
+      prefixedAddress as PrefixedAddress,
+    );
     this.#logger = logger.child({ chain: prefix, address });
     this.#prefix = prefix;
     this.#safe = address;
-    this.#name = name;
+    this.#name = alias;
     this.#notificationSender = opts.notifier;
     this.#signers = opts.signers ?? {};
-    this.#api = new SafeApiWrapper(opts.safe, opts.api);
+    this.#api = new SafeApiWrapper(
+      prefixedAddress as PrefixedAddress,
+      opts.api,
+    );
   }
 
   public async start(pollInterval: number): Promise<void> {

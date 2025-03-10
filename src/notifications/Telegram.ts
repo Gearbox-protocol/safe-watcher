@@ -44,7 +44,7 @@ export class Telegram implements INotifier {
   }
 
   #getMessage(event: Event): Markdown {
-    const { type, chainPrefix, safe, tx } = event;
+    const { type, chainPrefix, safe, tx, name } = event;
 
     const link = md.link(
       "🔗 transaction",
@@ -58,7 +58,7 @@ export class Telegram implements INotifier {
     let confirmations = md.join(tx.confirmations.map(printSigner), ", ");
     confirmations = md`Signed by: ${confirmations}`;
 
-    const msg = md`${ACTIONS[type]} ${NETWORKS[chainPrefix]} multisig [${tx.confirmations.length}/${tx.confirmationsRequired}] with safeTxHash ${md.inlineCode(tx.safeTxHash)} and nonce ${md.inlineCode(tx.nonce)}`;
+    const msg = md`${ACTIONS[type]} ${NETWORKS[chainPrefix]} ${name} multisig [${tx.confirmations.length}/${tx.confirmationsRequired}] with safeTxHash ${md.inlineCode(tx.safeTxHash)} and nonce ${md.inlineCode(tx.nonce)}`;
 
     const components = [msg, proposer, confirmations];
     const links = [link /* , report */];

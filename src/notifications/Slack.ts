@@ -29,14 +29,14 @@ export class Slack implements INotifier {
   }
 
   #formatMessage(event: Event): SlackMessage {
-    const { type, chainPrefix, safe, tx } = event;
+    const { type, chainPrefix, safe, tx, name } = event;
 
     const blocks = [
       {
         type: "section",
         text: {
           type: "mrkdwn",
-          text: `*Transaction ${type}*\nChain: ${chainPrefix}\nSafe: ${safe}\nTx Hash: \`${tx.safeTxHash}\`\nNonce: \`${tx.nonce}\``,
+          text: `*Transaction ${type} on ${name}*\nChain: ${chainPrefix}\nSafe: \`${safe}\`\nTx Hash: \`${tx.safeTxHash}\`\nNonce: \`${tx.nonce}\``,
         },
       },
       {
