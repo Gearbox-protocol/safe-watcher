@@ -28,17 +28,21 @@ export const Schema = z.object({
    */
   pollInterval: z.number().int().positive().default(20),
   /**
-   * Telegram bot token
+   * Telegram bot token  for notifications (optional)
    */
-  telegramBotToken: z.string(),
+  telegramBotToken: z.string().optional(),
   /**
-   * Telegram channel ID
+   * Telegram channel ID  for notifications (optional)
    */
-  telegramChannelId: z.string(),
+  telegramChannelId: z.string().optional(),
   /**
-   * Slack webhook URL for notifications (optional)
+   * Slack Bot token for notifications (optional)
    */
-  slackWebhookUrl: z.string().url().optional(),
+  slackBotToken: z.string().optional(),
+  /**
+   * Slack channel ID  for notifications (optional)
+   */
+  slackChannelId: z.string().optional(),
   /**
    * Prefixed safe addresses to watch, e.g. `eth:0x11111`
    */
