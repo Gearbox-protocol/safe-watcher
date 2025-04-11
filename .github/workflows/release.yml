@@ -6,6 +6,8 @@ on:
       - "rootstock"
   workflow_dispatch:
 
+permissions: read-all
+
 env:
   HUSKY: 0
   CI: true
@@ -27,7 +29,7 @@ jobs:
           echo "After : corepack version => $(corepack --version)"
           corepack enable
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e #v4.3.0
         with:
           cache: "yarn"
           node-version-file: ".nvmrc"
@@ -40,7 +42,7 @@ jobs:
         run: yarn build
 
       - name: Semantic Release
-        uses: cycjimmy/semantic-release-action@v4
+        uses: cycjimmy/semantic-release-action@0a51e81a6baff2acad3ee88f4121c589c73d0f0e #v4.2.0
         with:
           extra_plugins: |
             @codedependant/semantic-release-docker
