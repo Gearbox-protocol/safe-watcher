@@ -1,9 +1,11 @@
+import type { Address, Hash } from "viem";
+
 import type { PrefixedAddress } from "../config/index.js";
 import { AltAPI } from "./AltAPI.js";
 import { BaseApi } from "./BaseApi.js";
 import { ClassicAPI } from "./ClassicAPI.js";
 import type { SafeAPIMode } from "./schema.js";
-import type { ISafeAPI } from "./types.js";
+import type { ISafeAPI, ListedSafeTx, SafeTx } from "./types.js";
 
 const methods = ["fetchAll", "fetchLatest", "fetchDetailed"] as Array<
   keyof ISafeAPI
@@ -37,4 +39,7 @@ export class SafeApiWrapper extends BaseApi implements ISafeAPI {
       };
     }
   }
+  fetchAll: () => Promise<ListedSafeTx[]>;
+  fetchLatest: () => Promise<ListedSafeTx[]>;
+  fetchDetailed: (safeTxHash: Hash) => Promise<SafeTx<Address>>;
 }
