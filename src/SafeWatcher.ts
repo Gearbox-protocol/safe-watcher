@@ -42,7 +42,7 @@ class SafeWatcher {
     this.#logger = logger.child({ chain: prefix, address });
     this.#prefix = prefix;
     this.#safe = address;
-    this.#name = alias;
+    this.#name = typeof alias === "string" ? alias : "";
     this.#notificationSender = opts.notifier;
     this.#signers = opts.signers ?? {};
     this.#api = new SafeApiWrapper(
@@ -172,7 +172,7 @@ class SafeWatcher {
   }
 
   #checkSumAddress(address: Address): Address {
-    let checksumedAddress = address;
+    let checksumedAddress: Address = address;
     if (this.#prefix.trim() === "rsk") {
       checksumedAddress = toChecksumAddress(address, 30);
     } else if (this.#prefix.trim() === "trsk") {
