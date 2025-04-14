@@ -20,18 +20,23 @@ export class SafeApiWrapper extends BaseApi implements ISafeAPI {
     this.#classic = new ClassicAPI(safe);
     this.#alt = new AltAPI(safe);
     for (const m of methods) {
+      // @ts-ignore */
       this[m] = async (...args: Parameters<ISafeAPI[typeof m]>) => {
         if (mode === "classic") {
+          // @ts-ignore */
           return this.#classic[m](...args);
         } else if (mode === "alt") {
+          // @ts-ignore */
           return this.#alt[m](...args);
         } else {
           try {
+            // @ts-ignore */
             const classic = await Promise.resolve(this.#classic[m](...args));
             return classic;
           } catch (e) {
             this.logger.error(e);
             this.logger.warn("falling back to alternative api");
+            // @ts-ignore */
             const alt = await Promise.resolve(this.#alt[m](...args));
             return alt;
           }
