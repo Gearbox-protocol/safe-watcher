@@ -1,3 +1,4 @@
+import type { Block, KnownBlock } from "@slack/types";
 import { WebClient } from "@slack/web-api";
 
 import logger from "../logger.js";
@@ -10,7 +11,7 @@ export interface SlackOptions {
 }
 
 interface SlackMessage {
-  blocks: object[];
+  blocks: (Block | KnownBlock)[];
   text: string;
 }
 
@@ -31,7 +32,7 @@ export class Slack implements INotifier {
   #formatMessage(event: Event): SlackMessage {
     const { type, chainPrefix, safe, tx, name } = event;
 
-    const blocks = [
+    const blocks: KnownBlock[] = [
       {
         type: "section",
         text: {
