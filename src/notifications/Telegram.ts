@@ -3,6 +3,7 @@ import { md } from "@vlad-yakovlev/telegram-md";
 
 import logger from "../logger.js";
 import type { Signer } from "../safe/index.js";
+import type { SafeTxHashesResponse } from "../safe-hashes/index.js";
 import type { Event, EventType, INotifier } from "../types.js";
 
 const ACTIONS: Record<EventType, string> = {
@@ -38,12 +39,15 @@ export class Telegram implements INotifier {
     this.#safeURL = opts.safeURL;
   }
 
-  public async send(event: Event): Promise<void> {
-    const msg = this.#getMessage(event);
+  public async send(
+    event: Event,
+    safeTxHashes: SafeTxHashesResponse,
+  ): Promise<void> {
+    const msg = this.#getMessage(event, safeTxHashes);
     await this.#sendToTelegram(msg.toString());
   }
 
-  #getMessage(event: Event): Markdown {
+  #getMessage(event: Event, safeTxHashes: SafeTxHashesResponse): Markdown {
     const { type, chainPrefix, safe, tx, name } = event;
 
     const link = md.link(
@@ -60,7 +64,8 @@ export class Telegram implements INotifier {
 
     const msg = md`${ACTIONS[type]} ${NETWORKS[chainPrefix]} ${name} multisig [${tx.confirmations.length}/${tx.confirmationsRequired}] with safeTxHash ${md.inlineCode(tx.safeTxHash)} and nonce ${md.inlineCode(tx.nonce)}`;
 
-    const components = [msg, proposer, confirmations];
+    const msg2 = md`to: ${safeTxHashes.transactionData.to}`;
+    const components = [msg, proposer, confirmations, msg2];
     const links = [link /* , report */];
     // if (pendingReport) {
     //   links.push(md.link("📄 pending report", pendingReport));

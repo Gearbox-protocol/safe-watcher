@@ -1,6 +1,7 @@
 import type { Address } from "viem";
 
 import type { ListedSafeTx, SafeTx, Signer } from "./safe/index.js";
+import type { SafeTxHashesResponse } from "./safe-hashes/index.js";
 
 export type EventType = "created" | "updated" | "executed" | "malicious";
 
@@ -14,9 +15,12 @@ export interface Event {
 }
 
 export interface INotificationSender {
-  notify: (event: Event) => Promise<void>;
+  notify: (event: Event, safeTxHashes: SafeTxHashesResponse) => Promise<void>;
 }
 
 export interface INotifier {
-  send: (event: Event) => void | Promise<void>;
+  send: (
+    event: Event,
+    safeTxHashes: SafeTxHashesResponse,
+  ) => void | Promise<void>;
 }

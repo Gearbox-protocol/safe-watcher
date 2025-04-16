@@ -3,6 +3,7 @@ import { WebClient } from "@slack/web-api";
 
 import logger from "../logger.js";
 import { SAFE_API_URLS } from "../safe/constants.js";
+import type { SafeTxHashesResponse } from "../safe-hashes/index.js";
 import type { Event, INotifier } from "../types.js";
 
 export interface SlackOptions {
@@ -24,12 +25,18 @@ export class Slack implements INotifier {
     this.#channelId = opts.slackChannelId;
   }
 
-  public async send(event: Event): Promise<void> {
-    const message: SlackMessage = this.#formatMessage(event);
+  public async send(
+    event: Event,
+    safeTxHashes: SafeTxHashesResponse,
+  ): Promise<void> {
+    const message: SlackMessage = this.#formatMessage(event, safeTxHashes);
     await this.#sendToSlack(message);
   }
 
-  #formatMessage(event: Event): SlackMessage {
+  #formatMessage(
+    event: Event,
+    safeTxHashes: SafeTxHashesResponse,
+  ): SlackMessage {
     const { type, chainPrefix, safe, tx, name } = event;
 
     const blocks: KnownBlock[] = [
@@ -60,6 +67,16 @@ export class Slack implements INotifier {
           type: "mrkdwn",
           text: `*Signers*: ${tx.confirmations.map(this.#formatSigner).join(", ")}`,
         },
+      },
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: `*To*: \`${safeTxHashes.transactionData.to}\`\n*Value*: \`${safeTxHashes.transactionData.value}\`\n*Data*: \`${safeTxHashes.transactionData.data}\`\n*Encoded Message*: \`${safeTxHashes.transactionData.encodedMessage}\`\n*Binary String Literal*: \`${safeTxHashes.legacyLedgerFormat.binaryStringLiteral}\`\n*Domain Hash*: \`${safeTxHashes.hashes.domainHash}\`\n*Domain Hash*: \`${safeTxHashes.hashes.messageHash}\`\n*Domain Hash*: \`${safeTxHashes.hashes.safeTransactionHash}\``,
+        },
+      },
+      {
+        type: "divider",
       },
       {
         type: "actions",
