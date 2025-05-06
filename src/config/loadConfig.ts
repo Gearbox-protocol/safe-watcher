@@ -5,7 +5,7 @@ import { envAdapter } from "zod-config/env-adapter";
 import { jsonAdapter } from "zod-config/json-adapter";
 import { yamlAdapter } from "zod-config/yaml-adapter";
 
-import { getSecrets, isECS } from "../aws/index.js";
+import { buildConfig, isECS } from "../aws/index.js";
 import logger from "../logger.js";
 import { Schema } from "./schema.js";
 
@@ -22,7 +22,7 @@ export async function loadConfig(): Promise<Schema> {
       adapters: [yamlAdapter({ path }), envAdapter()],
     });
   } else {
-    const config = await getSecrets();
+    const config = await buildConfig();
     const tempFilePath = tmp.fileSync({ postfix: ".json" }).name;
     writeFileSync(tempFilePath, JSON.stringify(config));
 

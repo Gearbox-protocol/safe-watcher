@@ -3,10 +3,10 @@ import {
   SecretsManagerClient,
 } from "@aws-sdk/client-secrets-manager";
 
-import { Schema } from "../config/schema.js";
 import logger from "../logger.js";
+import type { SecretStored } from "./index.js";
 
-export async function getSecrets(): Promise<Schema> {
+export async function getSecrets(): Promise<SecretStored> {
   const secretsManagerClient = new SecretsManagerClient({
     region: "us-east-2",
   });
@@ -17,9 +17,15 @@ export async function getSecrets(): Promise<Schema> {
     const response = await secretsManagerClient.send(command);
     if (response.SecretString) {
       try {
-        logger.info(response.SecretString);
-        const parsedSecret = Schema.parse(JSON.parse(response.SecretString));
-        return parsedSecret;
+        const parsedSecret = JSON.parse(response.SecretString);
+        const secret: SecretStored = {
+          slackBotToken: parsedSecret.slackBotToken,
+          slackChannelId: parsedSecret.slackChannelId,
+          safeAddressesTable: parsedSecret.safeAddressesTable,
+          safeSignersTable: parsedSecret.safeSignersTable,
+        };
+        logger.info("Secret retrieved successfully");
+        return secret;
       } catch (error) {
         logger.error("Error parsing secret", error);
         throw new Error("Error parsing secret");
