@@ -4,12 +4,18 @@ on:
   release:
     types: [created, edited, published]
 
-permissions:
-  id-token: write # This is required for requesting the JWT
-  contents: read # This is required for actions/checkout
+permissions: read-all
+
+env:
+  IMAGE_NAME: safe-watcher
+  IMAGE_TAG: ${{ github.sha }}
 
 jobs:
-  build:
+  build-and-deploy:
+    permissions:
+      id-token: write # This is required for requesting the JWT
+      contents: read # This is required for actions/checkout
+
     runs-on: ubuntu-latest
 
     steps:
@@ -17,6 +23,22 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@b5ca514318bd6ebac0fb2aedd5d36ec1b5c232a2 #v3.10.0
+
+      - name: Generate local image name
+        id: generate-local-img-name
+        run: |
+          echo "image-name=${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}" \
+          >> $GITHUB_OUTPUT
+
+      - name: Build and tag Container image
+        id: build-image
+        uses: docker/build-push-action@14487ce63c7a62a4a324b0bfb37086795e31c6c1 #v6.16.0
+        with:
+          tags: ${{ steps.generate-local-img-name.outputs.image-name }}
+          file: Dockerfile
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/amd64
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@ececac1a45f3b08a01d2dd070d28d111c5fe6722 #v4.1.0
@@ -31,16 +53,12 @@ jobs:
 
       - name: Generate image name
         id: generate-img-name
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
-          IMAGE_NAME: safe-watcher
         run: |
-          echo "image-name=${{ env.ECR_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}" \
+          echo "image-name=${{ steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}" \
           >> $GITHUB_OUTPUT
 
-      - name: Build, tag and push image to Amazon ECR
-        id: build-image
+      - name: Rebuild, tag and push Container image
+        id: rebuild--push-image
         uses: docker/build-push-action@14487ce63c7a62a4a324b0bfb37086795e31c6c1 #v6.16.0
         with:
           push: true

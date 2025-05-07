@@ -5,15 +5,15 @@ import { envAdapter } from "zod-config/env-adapter";
 import { jsonAdapter } from "zod-config/json-adapter";
 import { yamlAdapter } from "zod-config/yaml-adapter";
 
-import { buildConfig, isECS } from "../aws/index.js";
+import { buildConfig } from "../aws/index.js";
 import logger from "../logger.js";
 import { Schema } from "./schema.js";
 
 export async function loadConfig(): Promise<Schema> {
-  if (!isECS()) {
+  const cIndex = process.argv.indexOf("--config");
+  if (cIndex !== -1) {
     let path = "config.yaml";
     logger.info("Loading config from local file");
-    const cIndex = process.argv.indexOf("--config");
     if (cIndex > 0) {
       path = process.argv[cIndex + 1] || path;
     }
@@ -22,6 +22,7 @@ export async function loadConfig(): Promise<Schema> {
       adapters: [yamlAdapter({ path }), envAdapter()],
     });
   } else {
+    // If no config file is provided, load from AWS
     const config = await buildConfig();
     const tempFilePath = tmp.fileSync({ postfix: ".json" }).name;
     writeFileSync(tempFilePath, JSON.stringify(config));
