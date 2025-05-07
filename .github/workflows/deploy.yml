@@ -3,8 +3,6 @@ name: Deploy to Amazon ECS
 on:
   release:
     types: [created, edited, published]
-  push: # temporary for testing
-  workflow_dispatch: # temporary for testing
 
 permissions:
   id-token: write # This is required for requesting the JWT
