@@ -10,7 +10,7 @@ const nanoid = customAlphabet("1234567890abcdef", 8);
 class Healthcheck {
   #id = nanoid();
   #version?: string;
-  #start = Math.round(new Date().valueOf() / 1000);
+  #start = new Date();
 
   public async run(): Promise<void> {
     this.#version = process.env.PACKAGE_VERSION || "dev";
@@ -18,6 +18,7 @@ class Healthcheck {
       // Routing
       if (req.url === "/") {
         res.writeHead(200, { "Content-Type": "application/json" });
+        logger.debug("healthcheck ping");
         res.end(
           JSON.stringify({
             uptime: formatDuration(
@@ -28,13 +29,16 @@ class Healthcheck {
       } else if (req.url === "/metrics") {
         try {
           res.writeHead(200, { "Content-Type": "text/plain" });
+          logger.debug("healthcheck metrics");
           res.end(this.#metrics());
         } catch (ex) {
           res.writeHead(500, { "Content-Type": "text/plain" });
+          logger.error("healthcheck error", { error: ex });
           res.end("error");
         }
       } else {
         res.writeHead(404, { "Content-Type": "text/plain" });
+        logger.error("healthcheck not found", { url: req.url });
         res.end("not found");
       }
     });
