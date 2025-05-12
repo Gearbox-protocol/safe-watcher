@@ -1,4 +1,4 @@
-FROM node:16 AS build
+FROM node:23 AS build
 
 WORKDIR /app
 COPY package.json /app/
@@ -8,7 +8,9 @@ RUN npm install
 COPY . /app
 RUN npm run build
 
-FROM gcr.io/distroless/nodejs22-debian12
+FROM node:23-alpine
+
+RUN apk --no-cache add curl
 
 USER 1000:1000
 
