@@ -41,8 +41,8 @@ export function parseResponse(response: string): SafeTxHashesResponse {
     transactionData: {
       multisigAddress: extract("Multisig address") as Address,
       to: extract("To") as Address,
-      value: parseInt(extract("Value"), 10),
-      data: extract("Data") as `0x${string}`,
+      value: parseInt(extract("Value"), 10) || 0,
+      data: extract("Data: 0x") as `0x${string}`,
       encodedMessage: extract("Encoded message") as `0x${string}`,
       method: extract("Method") || null,
       parameters: extractParameters(lines),
