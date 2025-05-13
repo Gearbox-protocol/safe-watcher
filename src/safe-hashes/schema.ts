@@ -7,6 +7,8 @@ export interface SafeTxHashesResponse {
     value: number;
     data: `0x${string}`;
     encodedMessage: `0x${string}`;
+    method: string | null;
+    parameters: string | null;
   };
   legacyLedgerFormat: {
     binaryStringLiteral: string;

@@ -34,29 +34,37 @@ export function SafeTxHashes(
 
 export function parseResponse(response: string): SafeTxHashesResponse {
   const lines = response.split("\n");
+  const extract = (key: string) =>
+    lines.find(line => line.includes(key))?.split(": ")[1] || "";
 
   return {
     transactionData: {
-      multisigAddress: extract("Multisig address", lines) as Address,
-      to: extract("To", lines) as Address,
-      value: parseInt(extract("Value", lines), 10),
-      data: extract("Data", lines) as `0x${string}`,
-      encodedMessage: extract("Encoded message", lines) as `0x${string}`,
+      multisigAddress: extract("Multisig address") as Address,
+      to: extract("To") as Address,
+      value: parseInt(extract("Value"), 10),
+      data: extract("Data") as `0x${string}`,
+      encodedMessage: extract("Encoded message") as `0x${string}`,
+      method: extract("Method") || null,
+      parameters: extractParameters(lines),
     },
     legacyLedgerFormat: {
-      binaryStringLiteral: extract("Binary string literal", lines) as string,
+      binaryStringLiteral: extract("Binary string literal"),
     },
     hashes: {
-      domainHash: extract("Domain hash", lines) as `0x${string}`,
-      messageHash: extract("Message hash", lines) as `0x${string}`,
-      safeTransactionHash: extract(
-        "Safe transaction hash",
-        lines,
-      ) as `0x${string}`,
+      domainHash: extract("Domain hash") as `0x${string}`,
+      messageHash: extract("Message hash") as `0x${string}`,
+      safeTransactionHash: extract("Safe transaction hash") as `0x${string}`,
     },
   };
 }
 
-function extract(key: string, lines: string[]): string {
-  return lines.find(line => line.includes(key))?.split(": ")[1] || "";
+function extractParameters(lines: string[]): string | null {
+  const start = lines.findIndex(line => line.includes("Parameters: [")) + 1;
+  const end = lines.findIndex(
+    line => line.includes("Legacy Ledger Format"),
+    start,
+  );
+  return start > 0 && end > start
+    ? lines.slice(start, end - 2).join("\n")
+    : null;
 }

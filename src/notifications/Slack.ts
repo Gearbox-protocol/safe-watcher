@@ -72,7 +72,16 @@ export class Slack implements INotifier {
         type: "section",
         text: {
           type: "mrkdwn",
-          text: `*To*: \`${safeTxHashes.transactionData.to}\`\n*Value*: \`${safeTxHashes.transactionData.value}\`\n*Data*: \`${safeTxHashes.transactionData.data}\`\n*Encoded Message*: \`${safeTxHashes.transactionData.encodedMessage}\`\n*Binary String Literal*: \`${safeTxHashes.legacyLedgerFormat.binaryStringLiteral}\`\n*Domain Hash*: \`${safeTxHashes.hashes.domainHash}\`\n*Domain Hash*: \`${safeTxHashes.hashes.messageHash}\`\n*Domain Hash*: \`${safeTxHashes.hashes.safeTransactionHash}\``,
+          text: `*To*: \`${safeTxHashes.transactionData.to}\`\n
+          *Value*: \`${safeTxHashes.transactionData.value}\`\n
+          *Data*: \`${safeTxHashes.transactionData.data}\`\n
+          *Encoded Message*: \`${safeTxHashes.transactionData.encodedMessage}\`\n
+          *Method*: \`${safeTxHashes.transactionData.method}\`\n
+          *Parameters: \`${safeTxHashes.transactionData.parameters}\`\n
+          *Binary String Literal*: \`${safeTxHashes.legacyLedgerFormat.binaryStringLiteral}\`\n
+          *Domain Hash*: \`${safeTxHashes.hashes.domainHash}\`\n
+          *Message Hash*: \`${safeTxHashes.hashes.messageHash}\`\n
+          *Transaction Hash*: \`${safeTxHashes.hashes.safeTransactionHash}\``,
         },
       },
       {
