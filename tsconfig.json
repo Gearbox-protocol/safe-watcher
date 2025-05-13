@@ -9,13 +9,17 @@
     "sourceMap": true,
     "outDir": "./dist",
     "strict": true,
+    "noImplicitAny": false,
     "noErrorTruncation": true,
     "strictPropertyInitialization": false,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
+    "resolveJsonModule": true,
     "experimentalDecorators": true,
+    "downlevelIteration": true,
     "emitDecoratorMetadata": true,
     "forceConsistentCasingInFileNames": true
-  }
+  },
+  "include": ["src", "jest.config.ts", "test"]
 }

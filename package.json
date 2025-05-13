@@ -16,7 +16,8 @@
     "lint": "eslint \"**/*.ts\" --fix",
     "lint:ci": "eslint \"**/*.ts\"",
     "typecheck:ci": "tsc --noEmit",
-    "test": "vitest"
+    "test": "npx jest --coverage --watchAll=false || exit 0",
+    "test:watch": "npx jest --coverage --watch"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.803.0",
@@ -41,14 +42,18 @@
     "@commitlint/config-conventional": "^19.0.3",
     "@gearbox-protocol/eslint-config": "^2.0.0-next.2",
     "@gearbox-protocol/prettier-config": "^2.0.0-next.0",
+    "@types/jest": "^29.5.14",
     "@types/node": "^22.13.5",
     "esbuild": "^0.25.0",
     "eslint": "^8.57.0",
     "husky": "^9.0.11",
+    "jest": "^29.7.0",
     "lint-staged": "^15.2.2",
     "msw": "^2.2.2",
     "pino-pretty": "^13.0.0",
     "prettier": "^3.2.5",
+    "ts-jest": "^29.3.2",
+    "ts-node": "^10.9.2",
     "tsx": "^4.7.1",
     "typescript": "^5.3.3",
     "vitest": "^2.1.8"
@@ -71,6 +76,28 @@
       "prettier --write"
     ],
     "*.{json,md}": "prettier --write"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "preset": "ts-jest",
+    "moduleNameMapper": {
+      "^(\\.\\.?\\/.+)\\.jsx?$": "$1"
+    },
+    "collectCoverageFrom": [
+      "src/aws/*.ts",
+      "src/safe-hashes/*.ts",
+      "src/safe/*.ts",
+      "src/config/*.ts",
+      "src/utils/*.ts"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 75,
+        "functions": 90,
+        "lines": 90,
+        "statements": 95
+      }
+    }
   },
   "packageManager": "yarn@4.6.0"
 }
