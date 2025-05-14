@@ -13,7 +13,7 @@ export function SafeTxHashes(
   const network = NETWORKS[prefix];
   return new Promise<string>((resolve, reject) => {
     exec(
-      `/app/safe-tx-hashes.sh --network ${network} --address ${address} --nonce ${nonce}`,
+      `/app/safe-hashes.sh --network ${network} --address ${address} --nonce ${nonce}`,
       (error, stdout, stderr) => {
         if (error) {
           logger.error(`error: ${error.message}`);
