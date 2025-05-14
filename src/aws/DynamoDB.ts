@@ -31,10 +31,11 @@ export class DynamoDB {
         return filteredItems;
       } else {
         logger.debug("No items found");
+        throw new Error("No items found");
       }
     } catch (error) {
       logger.error("Error fetching items", error);
+      throw new Error("Error fetching items");
     }
-    return [];
   }
 }

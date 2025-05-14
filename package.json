@@ -44,6 +44,8 @@
     "@gearbox-protocol/prettier-config": "^2.0.0-next.0",
     "@types/jest": "^29.5.14",
     "@types/node": "^22.13.5",
+    "aws-sdk-client-mock": "^4.1.0",
+    "aws-sdk-client-mock-jest": "^4.1.0",
     "esbuild": "^0.25.0",
     "eslint": "^8.57.0",
     "husky": "^9.0.11",
