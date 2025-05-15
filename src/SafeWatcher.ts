@@ -21,20 +21,20 @@ interface SafeWatcherOptions {
   safe: Partial<Record<PrefixedAddress, string>>;
   signers?: Partial<Record<Address, string>>;
   notifier?: INotificationSender;
-  api?: SafeAPIMode;
+  api?: SafeAPIMode | ISafeAPI;
 }
 
 class SafeWatcher {
-  readonly #prefix: string;
-  readonly #safe: `0x${string}`;
-  readonly #name: string;
+  readonly prefix: string;
+  readonly safe: `0x${string}`;
+  readonly name: string;
   readonly #notificationSender?: INotificationSender;
   readonly #logger: Logger;
   readonly #api: ISafeAPI;
-  readonly #txs: Map<Hash, ListedSafeTx> = new Map();
-  readonly #signers: Partial<Record<Address, string>>;
+  readonly txs: Map<Hash, ListedSafeTx> = new Map();
+  readonly signers: Partial<Record<Address, string>>;
 
-  #interval?: NodeJS.Timeout;
+  interval?: NodeJS.Timeout;
 
   constructor(opts: SafeWatcherOptions) {
     const [prefixedAddress, alias] = Object.entries(opts.safe)[0];
@@ -42,24 +42,28 @@ class SafeWatcher {
       prefixedAddress as PrefixedAddress,
     );
     this.#logger = logger.child({ chain: prefix, address });
-    this.#prefix = prefix;
-    this.#safe = address;
-    this.#name = typeof alias === "string" ? alias : "";
+    this.prefix = prefix;
+    this.safe = address;
+    this.name = typeof alias === "string" ? alias : "";
     this.#notificationSender = opts.notifier;
-    this.#signers = opts.signers ?? {};
-    this.#api = new SafeApiWrapper(
-      prefixedAddress as PrefixedAddress,
-      opts.api,
-    );
+    this.signers = opts.signers ?? {};
+    if (opts.api && typeof opts.api === "object") {
+      this.#api = opts.api as ISafeAPI;
+    } else {
+      this.#api = new SafeApiWrapper(
+        prefixedAddress as PrefixedAddress,
+        opts.api,
+      );
+    }
   }
 
   public async start(pollInterval: number): Promise<void> {
     const txs = await this.#api.fetchAll();
     for (const tx of txs) {
-      this.#txs.set(tx.safeTxHash, tx);
+      this.txs.set(tx.safeTxHash, tx);
     }
     if (pollInterval > 0) {
-      this.#interval = setInterval(() => {
+      this.interval = setInterval(() => {
         this.poll().catch(e => {
           this.#logger.error(e);
         });
@@ -69,8 +73,9 @@ class SafeWatcher {
   }
 
   public stop(): void {
-    if (this.#interval) {
-      clearInterval(this.#interval);
+    if (this.interval) {
+      clearInterval(this.interval);
+      this.interval = undefined;
     }
   }
 
@@ -103,14 +108,14 @@ class SafeWatcher {
 
     for (const tx of txs) {
       try {
-        const old = this.#txs.get(tx.safeTxHash);
+        const old = this.txs.get(tx.safeTxHash);
         if (old) {
           await this.#processTxUpdate(tx, old, pendingTxs);
         } else {
           await this.#processNewTx(tx, pendingTxs);
         }
-      } catch (e) {
-        this.#logger.error(e);
+      } catch (error) {
+        this.#logger.error(error);
       }
     }
   }
@@ -123,14 +128,14 @@ class SafeWatcher {
       { tx: tx.safeTxHash, nonce: tx.nonce },
       "detected new tx",
     );
-    this.#txs.set(tx.safeTxHash, tx);
+    this.txs.set(tx.safeTxHash, tx);
 
     // await this.anvilManagerAPI.requestSafeReport(this.#chain.network, [
     //   tx.safeTxHash,
     // ]);
     const detailed = await this.#fetchDetailed(tx.safeTxHash);
     const safeTxHashes: SafeTxHashesResponse = parseResponse(
-      await SafeTxHashes(this.#prefix, this.#safe, tx.nonce),
+      await SafeTxHashes(this.prefix, this.safe, tx.nonce),
     );
     const isMalicious =
       !MULTISEND_CALL_ONLY.has(detailed.to.toLowerCase() as Address) &&
@@ -139,9 +144,9 @@ class SafeWatcher {
     await this.#notificationSender?.notify(
       {
         type: isMalicious ? "malicious" : "created",
-        name: this.#name,
-        chainPrefix: this.#prefix,
-        safe: this.#safe,
+        name: this.name,
+        chainPrefix: this.prefix,
+        safe: this.safe,
         tx: detailed,
         pending,
       },
@@ -154,7 +159,7 @@ class SafeWatcher {
     old: ListedSafeTx,
     pending: ListedSafeTx[],
   ): Promise<void> {
-    this.#txs.set(tx.safeTxHash, tx);
+    this.txs.set(tx.safeTxHash, tx);
     if (
       old.isExecuted === tx.isExecuted &&
       old.confirmations === tx.confirmations
@@ -168,14 +173,14 @@ class SafeWatcher {
 
     const detailed = await this.#fetchDetailed(tx.safeTxHash);
     const safeTxHashes: SafeTxHashesResponse = parseResponse(
-      await SafeTxHashes(this.#prefix, this.#safe, tx.nonce),
+      await SafeTxHashes(this.prefix, this.safe, tx.nonce),
     );
     await this.#notificationSender?.notify(
       {
         type: tx.isExecuted ? "executed" : "updated",
-        name: this.#name,
-        chainPrefix: this.#prefix,
-        safe: this.#safe,
+        name: this.name,
+        chainPrefix: this.prefix,
+        safe: this.safe,
         tx: detailed,
         pending,
       },
@@ -185,9 +190,9 @@ class SafeWatcher {
 
   #checkSumAddress(address: Address): Address {
     let checksumedAddress: Address = address as `0x${string}`;
-    if (this.#prefix.trim() === "rsk") {
+    if (this.prefix.trim() === "rsk") {
       checksumedAddress = toChecksumAddress(address, 30) as `0x${string}`;
-    } else if (this.#prefix.trim() === "trsk") {
+    } else if (this.prefix.trim() === "trsk") {
       checksumedAddress = toChecksumAddress(address, 31) as `0x${string}`;
     }
     return checksumedAddress;
@@ -199,11 +204,11 @@ class SafeWatcher {
       ...tx,
       proposer: {
         address: tx.proposer,
-        name: this.#signers[this.#checkSumAddress(tx.proposer)],
+        name: this.signers[this.#checkSumAddress(tx.proposer)],
       },
       confirmations: tx.confirmations.map(c => ({
         address: c,
-        name: this.#signers[this.#checkSumAddress(c)],
+        name: this.signers[this.#checkSumAddress(c)],
       })),
     };
   }
