@@ -7,19 +7,15 @@ jest.mock("../src/utils/index.js", () => ({
 }));
 
 import { expect } from "@jest/globals";
-import type { Address, Hash } from "viem";
 
 import { SafeApiWrapper } from "../src/safe/SafeApiWrapper.js";
 import { fetchRetry } from "../src/utils/index.js";
+import {
+  mockAddress,
+  mockSafeAddress,
+  mockSafeTxHash,
+} from "./utils/config-utils.js";
 
-// Mock data
-const mockSafeAddress =
-  "rsk:0x0000000000000000000000000000000000000001" as const;
-const mockSafeTxHash =
-  "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" as Hash;
-const mockAddress = "0x0000000000000000000000000000000000000002" as Address;
-
-// Mock fetchRetry
 const fetchRetryMock = fetchRetry as any;
 
 describe("SafeApiWrapper", () => {

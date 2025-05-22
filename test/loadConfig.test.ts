@@ -1,12 +1,12 @@
 import { writeFileSync } from "fs";
 import { join } from "path";
-import tmp from "tmp";
-import { z } from "zod";
+import { dirSync, setGracefulCleanup } from "tmp";
 import { loadConfig as zodLoadConfig } from "zod-config";
 
 import { buildConfig, isECS } from "../src/aws/index.js";
 import { loadConfig } from "../src/config/loadConfig.js";
 import { Schema } from "../src/config/schema.js";
+import { createMockConfig } from "./utils/config-utils.js";
 
 // Mock AWS module
 jest.mock("../src/aws/index.js", () => ({
@@ -25,7 +25,7 @@ describe("loadConfig", () => {
 
   beforeEach(() => {
     // Create a temporary directory for test files
-    tempDir = tmp.dirSync().name;
+    tempDir = dirSync().name;
     configPath = join(tempDir, "config.yaml");
 
     // Reset mocks
@@ -36,18 +36,12 @@ describe("loadConfig", () => {
 
   afterEach(() => {
     // Clean up temporary files
-    tmp.setGracefulCleanup();
+    setGracefulCleanup();
   });
 
   test("should load config from local YAML file", async () => {
     // Create a test config file
-    const testConfig = {
-      safeURL: "https://app.safe.global",
-      pollInterval: 30,
-      safeAddresses: [
-        { "eth:0x1234567890123456789012345678901234567890": "Test Safe" },
-      ],
-    };
+    const testConfig = createMockConfig();
     writeFileSync(configPath, JSON.stringify(testConfig));
 
     // Mock process.argv
@@ -91,13 +85,7 @@ describe("loadConfig", () => {
   test("should load config from AWS when running in ECS", async () => {
     // Mock ECS environment
     (isECS as jest.Mock).mockReturnValue(true);
-    (buildConfig as jest.Mock).mockResolvedValue({
-      safeURL: "https://app.safe.global",
-      pollInterval: 30,
-      safeAddresses: [
-        { "eth:0x1234567890123456789012345678901234567890": "Test Safe" },
-      ],
-    });
+    (buildConfig as jest.Mock).mockResolvedValue(createMockConfig());
 
     // Mock zod-config's loadConfig
     (zodLoadConfig as jest.Mock).mockResolvedValue({});

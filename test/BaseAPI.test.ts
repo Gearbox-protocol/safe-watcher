@@ -6,12 +6,8 @@ import { expect } from "@jest/globals";
 
 import { ClassicAPI } from "../src/safe/ClassicAPI.js";
 import { fetchRetry } from "../src/utils/index.js";
+import { mockSafeAddress } from "./utils/config-utils.js";
 
-// Mock data
-const mockSafeAddress =
-  "rsk:0x0000000000000000000000000000000000000001" as const;
-
-// Mock fetchRetry
 const fetchRetryMock = fetchRetry as any;
 
 describe("BaseApi", () => {

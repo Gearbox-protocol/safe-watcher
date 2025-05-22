@@ -1,4 +1,8 @@
 import { Schema } from "../src/config/schema.js";
+import {
+  formattedAddressesExpected,
+  formattedSignersExpected,
+} from "./utils/config-utils.js";
 
 describe("Schema validation", () => {
   describe("safeURL", () => {
@@ -60,9 +64,9 @@ describe("Schema validation", () => {
 
   describe("safeAddresses", () => {
     test("should accept valid safe addresses", () => {
-      const result = Schema.shape.safeAddresses.safeParse([
-        { "eth:0x1234567890123456789012345678901234567890": "Test Safe" },
-      ]);
+      const result = Schema.shape.safeAddresses.safeParse(
+        formattedAddressesExpected,
+      );
       expect(result.success).toBe(true);
     });
 
@@ -103,9 +107,7 @@ describe("Schema validation", () => {
 
   describe("signers", () => {
     test("should accept valid signers", () => {
-      const result = Schema.shape.signers.safeParse({
-        "0x1234567890123456789012345678901234567890": "Test Signer",
-      });
+      const result = Schema.shape.signers.safeParse(formattedSignersExpected);
       expect(result.success).toBe(true);
     });
 

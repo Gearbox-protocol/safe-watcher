@@ -3,39 +3,17 @@ jest.mock("../src/utils/index.js", () => ({
 }));
 
 import { expect } from "@jest/globals";
-import type { Address, Hash } from "viem";
 
 import { AltAPI } from "../src/safe/AltAPI.js";
-import type { ListedSafeTx, SafeTx } from "../src/safe/types.js";
 import { fetchRetry } from "../src/utils/index.js";
+import {
+  mockAddress,
+  mockDetailedTx,
+  mockListedTx,
+  mockSafeAddress,
+  mockSafeTxHash,
+} from "./utils/config-utils.js";
 
-// Mock data
-const mockSafeAddress =
-  "rsk:0x0000000000000000000000000000000000000001" as const;
-const mockSafeTxHash =
-  "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" as Hash;
-const mockAddress = "0x0000000000000000000000000000000000000002" as Address;
-
-const mockListedTx: ListedSafeTx = {
-  safeTxHash: mockSafeTxHash,
-  nonce: 1,
-  isExecuted: false,
-  confirmations: 0,
-  confirmationsRequired: 2,
-};
-
-const mockDetailedTx: SafeTx<Address> = {
-  safeTxHash: mockSafeTxHash,
-  nonce: 1,
-  isExecuted: false,
-  confirmations: [mockAddress],
-  proposer: mockAddress,
-  to: mockAddress,
-  operation: 0,
-  confirmationsRequired: 2,
-};
-
-// Mock fetchRetry
 const fetchRetryMock = fetchRetry as any;
 
 describe("AltAPI", () => {
