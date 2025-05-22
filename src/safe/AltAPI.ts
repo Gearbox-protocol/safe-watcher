@@ -155,9 +155,9 @@ export class AltAPI extends BaseApi implements ISafeAPI {
         const data = await this.#fetchList(url);
         results.push(...(data.results.map(tx => tx.transaction) ?? []));
         url = data.next;
-      } catch (e) {
-        this.logger.error(e);
-        break;
+      } catch (error) {
+        this.logger.error(error);
+        return Promise.reject(error);
       }
     } while (url);
     return results.map(normalizeListed);
