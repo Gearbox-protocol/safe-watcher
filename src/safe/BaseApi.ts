@@ -21,19 +21,24 @@ export abstract class BaseApi {
 
   protected async fetch(url: string): Promise<any> {
     this.logger.debug(`fetching ${url}`);
-    const resp = await fetchRetry(url, {
-      retries: 20,
-      validateResponse: r => {
-        if (!r.ok) {
-          throw new Error(`invalid response status: ${r.status}`);
-        }
-        const ct = r.headers.get("Content-Type");
-        if (!ct?.includes("application/json")) {
-          throw new Error(`invalid content type: ${ct}`);
-        }
-      },
-    });
-    const data = await resp.json();
-    return data;
+    try {
+      const resp = await fetchRetry(url, {
+        retries: 20,
+        validateResponse: r => {
+          if (!r.ok) {
+            throw new Error(`invalid response status: ${r.status}`);
+          }
+          const ct = r.headers.get("Content-Type");
+          if (!ct?.includes("application/json")) {
+            throw new Error(`invalid content type: ${ct}`);
+          }
+        },
+      });
+      const data = await resp.json();
+      return data;
+    } catch (error) {
+      this.logger.error(error);
+      return Promise.reject(error);
+    }
   }
 }
