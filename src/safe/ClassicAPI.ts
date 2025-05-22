@@ -68,7 +68,7 @@ interface SafeMultisigTransactionData {
   countUniqueNonce: number;
 }
 
-function normalizeListed(tx: SafeMultisigTransaction): ListedSafeTx {
+export function normalizeListed(tx: SafeMultisigTransaction): ListedSafeTx {
   return {
     safeTxHash: tx.safeTxHash,
     nonce: tx.nonce,
