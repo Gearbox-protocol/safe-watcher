@@ -1,4 +1,4 @@
-FROM node:23 AS build
+FROM node:24 AS build
 
 WORKDIR /app
 COPY package.json /app/
@@ -8,7 +8,7 @@ RUN npm install
 COPY . /app
 RUN npm run build
 
-FROM node:23-alpine
+FROM node:24-alpine
 
 # Update packages and install dependencies
 RUN apk --no-cache add curl jq xxd
