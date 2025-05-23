@@ -41,7 +41,17 @@ export function parseResponse(response: string): SafeTxHashesResponse {
     transactionData: {
       multisigAddress: extract("Multisig address") as Address,
       to: extract("To") as Address,
-      value: parseInt(extract("Value"), 10) || 0,
+      value: (() => {
+        const rawValue = extract("Value");
+        const parsedValue = parseInt(rawValue, 10);
+        if (isNaN(parsedValue)) {
+          logger.warn(
+            `Invalid numeric value extracted for "Value": ${rawValue}`,
+          );
+          return 0;
+        }
+        return parsedValue;
+      })(),
       data: extract("Data: 0x") as `0x${string}`,
       encodedMessage: extract("Encoded message") as `0x${string}`,
       method: extract("Method") || null,

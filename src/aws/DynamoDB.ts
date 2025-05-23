@@ -30,8 +30,8 @@ export class DynamoDB {
         ) as { address: string; alias: string }[];
         return filteredItems;
       } else {
-        logger.debug("No items found");
-        throw new Error("No items found");
+        logger.debug(`No items found in table: ${tableName}`);
+        throw new Error(`No items found in table: ${tableName}`);
       }
     } catch (error) {
       logger.error("Error fetching items", error);
