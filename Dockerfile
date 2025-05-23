@@ -8,7 +8,7 @@ RUN npm install
 COPY . /app
 RUN npm run build
 
-FROM node:24-alpine
+FROM node:24-alpine@sha256:2e6c7937cb36d1e4af3c261b29e862205beb7a409de01f12b6df34800cc108ec
 
 # Update packages and install dependencies
 RUN apk --no-cache add curl jq xxd
