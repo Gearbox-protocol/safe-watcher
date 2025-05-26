@@ -33,6 +33,7 @@ class SafeWatcher {
   readonly #api: ISafeAPI;
   readonly txs: Map<Hash, ListedSafeTx> = new Map();
   readonly signers: Partial<Record<Address, string>>;
+  #pollInterval?: number;
 
   interval?: NodeJS.Timeout;
 
@@ -57,7 +58,16 @@ class SafeWatcher {
     }
   }
 
+  public getSafeAddress(): string {
+    return `${this.prefix}:${this.safe}`;
+  }
+
+  public getPollInterval(): number | undefined {
+    return this.#pollInterval;
+  }
+
   public async start(pollInterval: number): Promise<void> {
+    this.#pollInterval = pollInterval;
     const txs = await this.#api.fetchAll();
     for (const tx of txs) {
       this.txs.set(tx.safeTxHash, tx);
