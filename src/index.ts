@@ -1,6 +1,6 @@
 import { setTimeout } from "node:timers/promises";
 
-import { ConfigManager } from "./config/loadConfig.js";
+import { ConfigManager } from "./config/index.js";
 import Healthcheck from "./Healthcheck.js";
 import logger from "./logger.js";
 import { NotificationSender, Slack, Telegram } from "./notifications/index.js";
