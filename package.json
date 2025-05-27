@@ -91,7 +91,8 @@
       "src/safe-hashes/*.ts",
       "src/safe/*.ts",
       "src/config/*.ts",
-      "src/utils/*.ts"
+      "src/utils/*.ts",
+      "src/index.ts"
     ],
     "coverageThreshold": {
       "global": {
