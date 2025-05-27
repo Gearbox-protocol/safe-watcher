@@ -5,9 +5,9 @@ import { AWSConfigManager, isECS } from "../src/aws/index.js";
 import { ConfigManager, Schema } from "../src/config/index.js";
 import {
   createMockConfig,
-  formattedExpectedSignersWithNameChanged,
-  mockNewSigner,
+  expectedFormattedSignersWitUpdatedAlias,
   mockSafeAddressWithAlias,
+  mockSignerAddress,
 } from "./utils/config-utils.js";
 
 // Mock AWS module
@@ -146,7 +146,7 @@ describe("reloadConfig", () => {
     const newConfig = {
       ...initialConfig,
       safeAddresses: initialConfig.safeAddresses,
-      signers: formattedExpectedSignersWithNameChanged,
+      signers: expectedFormattedSignersWitUpdatedAlias,
       api: "fallback" as const,
     };
     mockAWSManager.loadConfig.mockResolvedValue(initialConfig);
@@ -217,7 +217,7 @@ describe("hasConfigChanged", () => {
       ...initialConfig,
       signers: {
         ...initialConfig.signers,
-        mockNewSigner,
+        mockNewSigner: mockSignerAddress,
       },
       api: "fallback" as const,
     };

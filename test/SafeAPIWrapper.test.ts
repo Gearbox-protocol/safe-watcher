@@ -13,7 +13,7 @@ import { fetchRetry } from "../src/utils/index.js";
 import {
   mockAddress,
   mockSafeAddress,
-  mockSafeTxHash,
+  mockTxHash,
 } from "./utils/config-utils.js";
 
 const fetchRetryMock = fetchRetry as any;
@@ -33,7 +33,7 @@ describe("SafeApiWrapper", () => {
           Promise.resolve({
             results: [
               {
-                safeTxHash: mockSafeTxHash,
+                safeTxHash: mockTxHash,
                 nonce: 1,
                 isExecuted: false,
                 confirmationsRequired: 2,
@@ -42,7 +42,7 @@ describe("SafeApiWrapper", () => {
                 operation: 0,
                 proposer: mockAddress,
                 submissionDate: new Date().toISOString(),
-                transactionHash: mockSafeTxHash,
+                transactionHash: mockTxHash,
               },
             ],
             next: null,
@@ -78,7 +78,7 @@ describe("SafeApiWrapper", () => {
                     actionCount: 1,
                     isCancellation: false,
                   },
-                  id: `multisig_${mockAddress}_${mockSafeTxHash}`,
+                  id: `multisig_${mockAddress}_${mockTxHash}`,
                   timestamp: Date.now(),
                   txStatus: "AWAITING_CONFIRMATIONS",
                   executionInfo: {
@@ -131,7 +131,7 @@ describe("SafeApiWrapper", () => {
                     actionCount: 1,
                     isCancellation: false,
                   },
-                  id: `multisig_${mockAddress}_${mockSafeTxHash}`,
+                  id: `multisig_${mockAddress}_${mockTxHash}`,
                   timestamp: Date.now(),
                   txStatus: "AWAITING_CONFIRMATIONS",
                   executionInfo: {

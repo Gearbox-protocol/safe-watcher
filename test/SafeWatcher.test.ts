@@ -4,58 +4,22 @@ import type { Address, Hash } from "viem";
 import type { ISafeAPI, ListedSafeTx, SafeTx } from "../src/safe/types.js";
 import SafeWatcher from "../src/SafeWatcher.js";
 import type { Event, INotificationSender } from "../src/types.js";
+import {
+  mockDetailedTx,
+  mockListedAnotherTx,
+  mockListedTx,
+  mockMaliciousTx,
+  mockSafeAddressAlias,
+  mockSafeAddressNoPrefix,
+  mockSafeAddressWithAlias,
+  mockSignerAddress,
+  rskPrefix,
+} from "./utils/config-utils.js";
 
 // Mock MULTISEND_CALL_ONLY
 jest.mock("../src/safe/constants.js", () => ({
   MULTISEND_CALL_ONLY: new Set(["0x1234def" as Address]),
 }));
-
-// Global test constants
-const safe = {
-  "rsk:0x0000000000000000000000000000000000000001": "Test",
-} as const;
-
-// Mock data
-const mockSafeTx: ListedSafeTx = {
-  safeTxHash:
-    "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" as Hash,
-  nonce: 1,
-  isExecuted: false,
-  confirmations: 0,
-  confirmationsRequired: 2,
-};
-
-const mockSafeTx2: ListedSafeTx = {
-  safeTxHash:
-    "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb" as Hash,
-  nonce: 2,
-  isExecuted: false,
-  confirmations: 1,
-  confirmationsRequired: 2,
-};
-
-const mockDetailedTx: SafeTx<Address> = {
-  safeTxHash:
-    "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" as Hash,
-  nonce: 1,
-  isExecuted: false,
-  confirmations: ["0x0000000000000000000000000000000000000002" as Address],
-  proposer: "0x0000000000000000000000000000000000000002" as Address,
-  to: "0x0000000000000000000000000000000000000003" as Address,
-  operation: 0,
-  confirmationsRequired: 2,
-};
-
-const mockMaliciousTx: SafeTx<Address> = {
-  ...mockDetailedTx,
-  operation: 1,
-  to: "0x0000000000000000000000000000000000000004" as Address, // not in any MULTISEND_CALL_ONLY set
-};
-
-// Add a signers map for name resolution
-const signers = {
-  "0x0000000000000000000000000000000000000002": "Alice",
-} as const;
 
 // Helper functions for test setup
 function createMockApi(
@@ -82,7 +46,12 @@ function createTestWatcher(
   } = {},
 ) {
   const { api = createMockApi(), notifier } = options;
-  return new SafeWatcher({ safe, api, notifier, signers });
+  return new SafeWatcher({
+    safe: mockSafeAddressWithAlias,
+    api,
+    notifier,
+    signers: mockSignerAddress,
+  });
 }
 
 // Mock the SafeTxHashes and parseResponse functions
@@ -136,11 +105,9 @@ describe("SafeWatcher", () => {
   describe("Initialization", () => {
     test("should initialize with correct safe address and name", () => {
       const safewatcher = createTestWatcher();
-      expect(safewatcher.prefix).toBe("rsk");
-      expect(safewatcher.safe).toBe(
-        "0x0000000000000000000000000000000000000001",
-      );
-      expect(safewatcher.name).toBe("Test");
+      expect(safewatcher.prefix).toBe(rskPrefix);
+      expect(safewatcher.safe).toBe(mockSafeAddressNoPrefix);
+      expect(safewatcher.name).toBe(mockSafeAddressAlias);
     });
 
     test("should throw error for invalid safe address", () => {
@@ -155,7 +122,7 @@ describe("SafeWatcher", () => {
       const mockApi = createMockApi({
         fetchAll: jest
           .fn<() => Promise<ListedSafeTx[]>>()
-          .mockResolvedValue([mockSafeTx, mockSafeTx2]),
+          .mockResolvedValue([mockListedTx, mockListedAnotherTx]),
       });
       const safewatcher = createTestWatcher({ api: mockApi });
       await safewatcher.start(0);
@@ -179,7 +146,7 @@ describe("SafeWatcher", () => {
       const mockApi = createMockApi({
         fetchLatest: jest
           .fn<() => Promise<ListedSafeTx[]>>()
-          .mockResolvedValue([mockSafeTx]),
+          .mockResolvedValue([mockListedTx]),
       });
       const watcher = createTestWatcher({ api: mockApi, notifier });
       watcher.txs.clear();
@@ -196,7 +163,7 @@ describe("SafeWatcher", () => {
       const mockApi = createMockApi({
         fetchLatest: jest
           .fn<() => Promise<ListedSafeTx[]>>()
-          .mockResolvedValue([mockSafeTx]),
+          .mockResolvedValue([mockListedTx]),
         fetchDetailed: jest
           .fn<(hash: Hash) => Promise<SafeTx<Address>>>()
           .mockResolvedValue(mockMaliciousTx),
@@ -234,7 +201,7 @@ describe("SafeWatcher", () => {
       const mockApi = createMockApi({
         fetchLatest: jest
           .fn<() => Promise<ListedSafeTx[]>>()
-          .mockResolvedValue([mockSafeTx]),
+          .mockResolvedValue([mockListedTx]),
         fetchDetailed: jest
           .fn<(hash: Hash) => Promise<SafeTx<Address>>>()
           .mockRejectedValue(new Error("API Error")),
@@ -254,7 +221,7 @@ describe("SafeWatcher", () => {
       const mockApi = createMockApi({
         fetchLatest: jest
           .fn<() => Promise<ListedSafeTx[]>>()
-          .mockResolvedValue([mockSafeTx]),
+          .mockResolvedValue([mockListedTx]),
       });
       const watcher = createTestWatcher({ api: mockApi, notifier });
 
@@ -263,7 +230,7 @@ describe("SafeWatcher", () => {
       await watcher["poll"]();
 
       // Then update it
-      const updatedTx = { ...mockSafeTx, confirmations: 1 };
+      const updatedTx = { ...mockListedTx, confirmations: 1 };
       const mockFetchLatest = mockApi.fetchLatest as jest.Mock<
         () => Promise<ListedSafeTx[]>
       >;
@@ -280,7 +247,7 @@ describe("SafeWatcher", () => {
       const mockApi = createMockApi({
         fetchLatest: jest
           .fn<() => Promise<ListedSafeTx[]>>()
-          .mockResolvedValue([mockSafeTx]),
+          .mockResolvedValue([mockListedTx]),
       });
       const watcher = createTestWatcher({ api: mockApi, notifier });
 
@@ -289,7 +256,7 @@ describe("SafeWatcher", () => {
       await watcher["poll"]();
 
       // Then mark it as executed
-      const executedTx = { ...mockSafeTx, isExecuted: true };
+      const executedTx = { ...mockListedTx, isExecuted: true };
       const mockFetchLatest = mockApi.fetchLatest as jest.Mock<
         () => Promise<ListedSafeTx[]>
       >;

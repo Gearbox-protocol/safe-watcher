@@ -7,9 +7,9 @@ import {
   createMockSecretsManagerClient,
 } from "./utils/aws-utils.js";
 import {
-  configData,
-  formattedAddressesExpected,
-  formattedSignersExpected,
+  defaultAWSConfigData,
+  expectedFormattedAddresses,
+  expectedFormattedSigners,
   mockAddresses,
   mockSigners,
 } from "./utils/config-utils.js";
@@ -42,10 +42,10 @@ describe("AWSConfigManager", () => {
       const manager = await AWSConfigManager.initialize();
       const config = await manager.loadConfig();
 
-      expect(config.slackBotToken).toBe(configData.slackBotToken);
-      expect(config.slackChannelId).toBe(configData.slackChannelId);
-      expect(config.safeAddresses).toEqual(formattedAddressesExpected);
-      expect(config.signers).toEqual(formattedSignersExpected);
+      expect(config.slackBotToken).toBe(defaultAWSConfigData.slackBotToken);
+      expect(config.slackChannelId).toBe(defaultAWSConfigData.slackChannelId);
+      expect(config.safeAddresses).toEqual(expectedFormattedAddresses);
+      expect(config.signers).toEqual(expectedFormattedSigners);
     });
 
     test("should throw error when dynamodb fails", async () => {
@@ -63,10 +63,12 @@ describe("AWSConfigManager", () => {
       await manager.loadConfig(); // Initial load
 
       const newConfig = await manager.reloadConfig();
-      expect(newConfig.slackBotToken).toBe(configData.slackBotToken);
-      expect(newConfig.slackChannelId).toBe(configData.slackChannelId);
-      expect(newConfig.safeAddresses).toEqual(formattedAddressesExpected);
-      expect(newConfig.signers).toEqual(formattedSignersExpected);
+      expect(newConfig.slackBotToken).toBe(defaultAWSConfigData.slackBotToken);
+      expect(newConfig.slackChannelId).toBe(
+        defaultAWSConfigData.slackChannelId,
+      );
+      expect(newConfig.safeAddresses).toEqual(expectedFormattedAddresses);
+      expect(newConfig.signers).toEqual(expectedFormattedSigners);
     });
 
     test("should keep current config when reload fails", async () => {
@@ -112,7 +114,7 @@ describe("AWSConfigManager", () => {
       const manager = await AWSConfigManager.initialize();
       const formatted = manager.formatSigners(mockSigners);
 
-      expect(formatted).toEqual(formattedSignersExpected);
+      expect(formatted).toEqual(expectedFormattedSigners);
     });
   });
 });

@@ -9,7 +9,7 @@ import {
   mockDetailedTx,
   mockListedTx,
   mockSafeAddress,
-  mockSafeTxHash,
+  mockTxHash,
 } from "./utils/config-utils.js";
 
 const fetchRetryMock = fetchRetry as any;
@@ -34,7 +34,7 @@ describe("ClassicAPI", () => {
             Promise.resolve({
               results: [
                 {
-                  safeTxHash: mockSafeTxHash,
+                  safeTxHash: mockTxHash,
                   nonce: 1,
                   isExecuted: false,
                   confirmationsRequired: 2,
@@ -57,7 +57,7 @@ describe("ClassicAPI", () => {
           headers: new Headers({ "Content-Type": "application/json" }),
           json: () =>
             Promise.resolve({
-              safeTxHash: mockSafeTxHash,
+              safeTxHash: mockTxHash,
               nonce: 1,
               isExecuted: false,
               confirmationsRequired: 2,
@@ -91,7 +91,7 @@ describe("ClassicAPI", () => {
   });
 
   test("should fetch detailed transaction", async () => {
-    const tx = await api.fetchDetailed(mockSafeTxHash);
+    const tx = await api.fetchDetailed(mockTxHash);
     expect(tx).toEqual(mockDetailedTx);
   });
 });
@@ -119,7 +119,7 @@ describe("ClassicAPI branch coverage", () => {
         headers: new Headers({ "Content-Type": "application/json" }),
         json: () =>
           Promise.resolve({
-            safeTxHash: mockSafeTxHash,
+            safeTxHash: mockTxHash,
             nonce: 1,
             isExecuted: false,
             confirmationsRequired: 2,
@@ -130,12 +130,12 @@ describe("ClassicAPI branch coverage", () => {
           }),
       } as unknown as Response);
     });
-    const tx1 = await api.fetchDetailed(mockSafeTxHash);
+    const tx1 = await api.fetchDetailed(mockTxHash);
     // Second call: should hit cache, so no fetchRetry call
     fetchRetryMock.mockImplementationOnce(() => {
       throw new Error("Should not be called");
     });
-    const tx2 = await api.fetchDetailed(mockSafeTxHash);
+    const tx2 = await api.fetchDetailed(mockTxHash);
     expect(tx2).toEqual(tx1);
   });
 
@@ -152,7 +152,7 @@ describe("ClassicAPI branch coverage", () => {
           Promise.resolve({
             results: [
               {
-                safeTxHash: mockSafeTxHash,
+                safeTxHash: mockTxHash,
                 nonce: 1,
                 isExecuted: false,
                 confirmationsRequired: 2,
@@ -177,7 +177,7 @@ describe("ClassicAPI branch coverage", () => {
           Promise.resolve({
             results: [
               {
-                safeTxHash: mockSafeTxHash,
+                safeTxHash: mockTxHash,
                 nonce: 2,
                 isExecuted: false,
                 confirmationsRequired: 2,
@@ -200,7 +200,7 @@ describe("ClassicAPI branch coverage", () => {
 
   test("should normalize listed transaction with undefined confirmations", () => {
     const tx = {
-      safeTxHash: mockSafeTxHash,
+      safeTxHash: mockTxHash,
       nonce: 1,
       isExecuted: false,
       confirmationsRequired: 2,
@@ -209,7 +209,7 @@ describe("ClassicAPI branch coverage", () => {
       operation: 0,
       proposer: mockAddress,
       submissionDate: new Date().toISOString(),
-      transactionHash: mockSafeTxHash,
+      transactionHash: mockTxHash,
     };
     const normalized = normalizeListed(tx);
     expect(normalized.confirmations).toBe(0);

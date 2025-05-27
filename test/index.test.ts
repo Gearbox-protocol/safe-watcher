@@ -3,8 +3,6 @@ jest.mock("node:timers/promises", () => ({
   setTimeout: jest.fn(() => Promise.resolve()),
 }));
 
-import { mock } from "node:test";
-
 import { jest } from "@jest/globals";
 
 import { ConfigManager } from "../src/config/index.js";
@@ -14,9 +12,8 @@ import logger from "../src/logger.js";
 import { NotificationSender } from "../src/notifications/index.js";
 import SafeWatcher from "../src/SafeWatcher.js";
 import {
-  configData,
+  defaultMockConfig,
   mockAnotherSafeAddressWithAlias,
-  mockConfig,
   mockSafeAddress,
   mockSafeAddressWithAlias,
 } from "./utils/config-utils.js";
@@ -92,7 +89,7 @@ describe("index.ts", () => {
     (SafeWatcher as jest.Mock).mockImplementation(() => mockWatcher);
     // Mock ConfigManager.prototype.initialize with all notifier properties
     jest.spyOn(ConfigManager.prototype, "initialize").mockResolvedValue({
-      ...mockConfig,
+      ...defaultMockConfig,
       telegramBotToken: "test-token",
       telegramChannelId: "test-channel",
       slackBotToken: "test-slack-token",
@@ -106,7 +103,7 @@ describe("index.ts", () => {
     await handleSafeAddress(
       mockSafeAddressWithAlias,
       0,
-      mockConfig,
+      defaultMockConfig,
       existingWatchers,
       mockSender,
     );
@@ -119,13 +116,13 @@ describe("index.ts", () => {
     await handleSafeAddress(
       mockSafeAddressWithAlias,
       1,
-      mockConfig,
+      defaultMockConfig,
       existingWatchers,
       mockSender,
     );
     expect(SafeWatcher).toHaveBeenCalledWith({
       safe: mockSafeAddressWithAlias,
-      signers: mockConfig.signers,
+      signers: defaultMockConfig.signers,
       notifier: mockSender,
     });
     expect(mockWatcher.start).toHaveBeenCalledWith(30000);
@@ -134,7 +131,7 @@ describe("index.ts", () => {
   test("initializeWatchers should stop watchers for addresses not in config", async () => {
     // Set up mockConfig with a different address than the watcher
     const mockConfigWithDifferentAddress = {
-      ...mockConfig,
+      ...defaultMockConfig,
       safeAddresses: [mockSafeAddressWithAlias] as [
         Partial<Record<`${string}:0x${string}`, string>>,
         ...Partial<Record<`${string}:0x${string}`, string>>[],
@@ -145,7 +142,7 @@ describe("index.ts", () => {
       slackChannelId: "test-slack-channel",
     };
 
-    await initializeWatchers(mockConfig, mockSender);
+    await initializeWatchers(defaultMockConfig, mockSender);
     await initializeWatchers(mockConfigWithDifferentAddress, mockSender);
     expect(mockWatcher.stop).toHaveBeenCalled();
   });
@@ -180,7 +177,7 @@ describe("index.ts", () => {
 
   test("should handle config reload by reinitializing watchers", async () => {
     const newConfig = {
-      ...mockConfig,
+      ...defaultMockConfig,
       safeAddresses: [mockSafeAddressWithAlias] as [
         Partial<Record<`${string}:0x${string}`, string>>,
         ...Partial<Record<`${string}:0x${string}`, string>>[],
@@ -219,7 +216,7 @@ describe("index.ts", () => {
   test("run should set up both Telegram and Slack notifiers when configured", async () => {
     jest
       .spyOn(ConfigManager.prototype, "initialize")
-      .mockResolvedValue(mockConfig);
+      .mockResolvedValue(defaultMockConfig);
     const addNotifierSpy = jest.spyOn(
       NotificationSender.prototype,
       "addNotifier",
@@ -238,14 +235,14 @@ describe("index.ts", () => {
     await handleSafeAddress(
       mockSafeAddressWithAlias,
       0,
-      mockConfig,
+      defaultMockConfig,
       existingWatchers,
       mockSender,
     );
     await handleSafeAddress(
       mockAnotherSafeAddressWithAlias,
       1,
-      mockConfig,
+      defaultMockConfig,
       existingWatchers,
       mockSender,
     );
@@ -254,12 +251,12 @@ describe("index.ts", () => {
     expect(SafeWatcher).toHaveBeenCalledTimes(2);
     expect(SafeWatcher).toHaveBeenNthCalledWith(1, {
       safe: mockSafeAddressWithAlias,
-      signers: mockConfig.signers,
+      signers: defaultMockConfig.signers,
       notifier: mockSender,
     });
     expect(SafeWatcher).toHaveBeenNthCalledWith(2, {
       safe: mockAnotherSafeAddressWithAlias,
-      signers: mockConfig.signers,
+      signers: defaultMockConfig.signers,
       notifier: mockSender,
     });
 
@@ -297,7 +294,7 @@ describe("index.ts", () => {
     await handleSafeAddress(
       mockSafeAddressWithAlias,
       0,
-      mockConfig,
+      defaultMockConfig,
       existingWatchers,
       mockSender,
     );
@@ -308,7 +305,7 @@ describe("index.ts", () => {
     // Verify that a new watcher was created
     expect(SafeWatcher).toHaveBeenCalledWith({
       safe: mockSafeAddressWithAlias,
-      signers: mockConfig.signers,
+      signers: defaultMockConfig.signers,
       notifier: mockSender,
     });
   });

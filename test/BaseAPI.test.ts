@@ -6,7 +6,11 @@ import { expect } from "@jest/globals";
 
 import { ClassicAPI } from "../src/safe/ClassicAPI.js";
 import { fetchRetry } from "../src/utils/index.js";
-import { mockSafeAddress } from "./utils/config-utils.js";
+import {
+  mockSafeAddress,
+  mockSafeAddressNoPrefix,
+  rskPrefix,
+} from "./utils/config-utils.js";
 
 const fetchRetryMock = fetchRetry as any;
 
@@ -55,8 +59,8 @@ describe("BaseApi", () => {
 
   test("should initialize with correct address and prefix", () => {
     const api = new ClassicAPI(mockSafeAddress);
-    expect(api["address"]).toBe("0x0000000000000000000000000000000000000001");
-    expect(api["prefix"]).toBe("rsk");
+    expect(api["address"]).toBe(mockSafeAddressNoPrefix);
+    expect(api["prefix"]).toBe(rskPrefix);
   });
 
   test("should throw error for invalid address", () => {
@@ -67,9 +71,7 @@ describe("BaseApi", () => {
   });
 
   test("should throw error for missing prefix", () => {
-    // Use an address without a prefix, cast to any to bypass type check
-    const noPrefixAddress = "0x0000000000000000000000000000000000000001" as any;
-    expect(() => new ClassicAPI(noPrefixAddress)).toThrow(
+    expect(() => new ClassicAPI(mockSafeAddressNoPrefix as any)).toThrow(
       "invalid prefixed safe address",
     );
   });

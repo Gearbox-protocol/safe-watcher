@@ -11,7 +11,7 @@ import {
   mockDetailedTx,
   mockListedTx,
   mockSafeAddress,
-  mockSafeTxHash,
+  mockTxHash,
 } from "./utils/config-utils.js";
 
 const fetchRetryMock = fetchRetry as any;
@@ -47,7 +47,7 @@ describe("AltAPI", () => {
                       actionCount: 1,
                       isCancellation: false,
                     },
-                    id: `multisig_${mockAddress}_${mockSafeTxHash}`,
+                    id: `multisig_${mockAddress}_${mockTxHash}`,
                     timestamp: Date.now(),
                     txStatus: "AWAITING_CONFIRMATIONS",
                     executionInfo: {
@@ -76,7 +76,7 @@ describe("AltAPI", () => {
           json: () =>
             Promise.resolve({
               safeAddress: mockAddress,
-              txId: `multisig_${mockAddress}_${mockSafeTxHash}`,
+              txId: `multisig_${mockAddress}_${mockTxHash}`,
               executedAt: null,
               txStatus: "AWAITING_CONFIRMATIONS",
               txInfo: {
@@ -108,7 +108,7 @@ describe("AltAPI", () => {
                 refundReceiver: {
                   value: "0x0000000000000000000000000000000000000000",
                 },
-                safeTxHash: mockSafeTxHash,
+                safeTxHash: mockTxHash,
                 executor: null,
                 signers: [{ value: mockAddress }],
                 confirmationsRequired: 2,
@@ -146,7 +146,7 @@ describe("AltAPI", () => {
   });
 
   test("should fetch detailed transaction", async () => {
-    const tx = await api.fetchDetailed(mockSafeTxHash);
+    const tx = await api.fetchDetailed(mockTxHash);
     expect(tx).toEqual(mockDetailedTx);
   });
 
