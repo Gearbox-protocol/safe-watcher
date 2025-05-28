@@ -1,4 +1,4 @@
-FROM node:24@sha256:7cd385e17f9d66b2c3ae40597359286073a33266db71b5f01ce2d87db81b52f7 AS build
+FROM node:24@sha256:c332080545f1de96deb1c407e6fbe9a7bc2be3645e127845fdcce57a7af3cf56 AS build
 
 WORKDIR /app
 COPY package.json /app/
@@ -8,7 +8,7 @@ RUN npm install
 COPY . /app
 RUN npm run build
 
-FROM node:24-alpine@sha256:2e6c7937cb36d1e4af3c261b29e862205beb7a409de01f12b6df34800cc108ec
+FROM node:24-alpine@sha256:dfea0736e82fef246aba86b2082a5e86c4825470302692b841d097dd61253b79
 
 # Update packages and install dependencies
 RUN apk --no-cache add curl jq xxd
