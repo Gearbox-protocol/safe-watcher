@@ -39,7 +39,7 @@ export class ConfigManager {
     return load({
       schema: Schema,
       adapters: [yamlAdapter({ path }), envAdapter()],
-    });
+    }) as Promise<Schema>;
   }
 
   private hasConfigChanged(newConfig: Schema): boolean {
