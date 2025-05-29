@@ -46,7 +46,7 @@
     "@types/node": "^22.15.21",
     "aws-sdk-client-mock": "^4.1.0",
     "aws-sdk-client-mock-jest": "^4.1.0",
-    "esbuild": "^0.25.0",
+    "esbuild": "^0.25.5",
     "eslint": "^8.57.0",
     "fetch-mock": "^12.5.2",
     "husky": "^9.0.11",
