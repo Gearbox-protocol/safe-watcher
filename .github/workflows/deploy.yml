@@ -70,7 +70,7 @@ jobs:
 
       - name: Fill in the new image ID in the Amazon ECS task definition
         id: task-def
-        uses: aws-actions/amazon-ecs-render-task-definition@e89b6874818d80bb892e7010a5013519bde9d9a6 #v1.7.2
+        uses: aws-actions/amazon-ecs-render-task-definition@6bb171240ff2b056ea6c599c9d2370c043f200be #v1.7.3
         with:
           task-definition-arn: ${{ secrets.AWS_ECS_TASK_DEFINITION_ARN }}
           container-name: ${{ secrets.AWS_ECS_CONTAINER_NAME }}
