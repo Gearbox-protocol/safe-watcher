@@ -1,11 +1,3 @@
-import { ScanCommand } from "@aws-sdk/client-dynamodb";
-import { GetSecretValueCommand } from "@aws-sdk/client-secrets-manager";
-
-import { AWSConfigManager } from "../src/aws/index.js";
-import {
-  createMockDynamoDBClient,
-  createMockSecretsManagerClient,
-} from "./utils/aws-utils.js";
 import {
   defaultAWSConfigData,
   expectedFormattedAddresses,
@@ -14,13 +6,37 @@ import {
   mockSigners,
 } from "./utils/config-utils.js";
 
-describe("AWSConfigManager", () => {
-  let ddbMock: ReturnType<typeof createMockDynamoDBClient>;
-  let secMock: ReturnType<typeof createMockSecretsManagerClient>;
+jest.mock("../src/aws/DynamoDB.js", () => ({
+  DynamoDB: jest.fn().mockImplementation(() => ({
+    getItems: jest.fn().mockImplementation(async (tableName: string) => {
+      if (tableName === "addresses") return mockAddresses;
+      if (tableName === "signers") return mockSigners;
+      throw new Error("Unknown table name");
+    }),
+  })),
+}));
 
+jest.mock("../src/aws/SecretManager.js", () => ({
+  getSecrets: jest.fn().mockResolvedValue({
+    slackBotToken: defaultAWSConfigData.slackBotToken,
+    slackChannelId: defaultAWSConfigData.slackChannelId,
+    safeAddressesTable: defaultAWSConfigData.safeAddressesTable,
+    safeSignersTable: defaultAWSConfigData.safeSignersTable,
+  }),
+}));
+
+import { AWSConfigManager } from "../src/aws/index.js";
+
+const getItemsErrorMock = jest
+  .fn()
+  .mockRejectedValueOnce(new Error("Error fetching items"));
+const dynamoDBErrorMock = () => ({ getItems: getItemsErrorMock });
+const getSecretsError = () =>
+  Promise.reject(new Error("Error retrieving secret"));
+
+describe("AWSConfigManager", () => {
   beforeEach(() => {
-    ddbMock = createMockDynamoDBClient();
-    secMock = createMockSecretsManagerClient();
+    jest.clearAllMocks();
   });
 
   describe("initialize", () => {
@@ -30,7 +46,8 @@ describe("AWSConfigManager", () => {
     });
 
     test("should throw error when secrets manager fails", async () => {
-      secMock.on(GetSecretValueCommand).rejects(new Error("Secrets error"));
+      const { getSecrets } = await import("../src/aws/SecretManager.js");
+      (getSecrets as jest.Mock).mockImplementationOnce(getSecretsError);
       await expect(AWSConfigManager.initialize()).rejects.toThrow(
         "Error retrieving secret",
       );
@@ -41,7 +58,6 @@ describe("AWSConfigManager", () => {
     test("should load configuration successfully", async () => {
       const manager = await AWSConfigManager.initialize();
       const config = await manager.loadConfig();
-
       expect(config.slackBotToken).toBe(defaultAWSConfigData.slackBotToken);
       expect(config.slackChannelId).toBe(defaultAWSConfigData.slackChannelId);
       expect(config.safeAddresses).toEqual(expectedFormattedAddresses);
@@ -49,8 +65,10 @@ describe("AWSConfigManager", () => {
     });
 
     test("should throw error when dynamodb fails", async () => {
+      const { DynamoDB } = await import("../src/aws/DynamoDB.js");
+      (DynamoDB as jest.Mock).mockImplementationOnce(dynamoDBErrorMock);
+
       const manager = await AWSConfigManager.initialize();
-      ddbMock.on(ScanCommand).rejects(new Error("DynamoDB error"));
       await expect(manager.loadConfig()).rejects.toThrow(
         "Error fetching items",
       );
@@ -75,9 +93,13 @@ describe("AWSConfigManager", () => {
       const manager = await AWSConfigManager.initialize();
       const initialConfig = await manager.loadConfig(); // Initial load
 
-      ddbMock.on(ScanCommand).rejects(new Error("DynamoDB error"));
-      const reloadedConfig = await manager.reloadConfig();
+      const { DynamoDB } = await import("../src/aws/DynamoDB.js");
+      const mockDynamoDB = new DynamoDB();
+      (mockDynamoDB.getItems as jest.Mock).mockRejectedValueOnce(
+        new Error("DynamoDB error"),
+      );
 
+      const reloadedConfig = await manager.reloadConfig();
       expect(reloadedConfig).toEqual(initialConfig);
     });
   });
