@@ -20,7 +20,7 @@
     "test:watch": "npx jest --coverage --watch"
   },
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "^3.803.0",
+    "@aws-sdk/client-dynamodb": "^3.817.0",
     "@aws-sdk/client-secrets-manager": "^3.817.0",
     "@rsksmart/rsk-utils": "^2.0.5",
     "@slack/types": "^2.14.0",
