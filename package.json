@@ -4,7 +4,7 @@
   "author": "doomsower <12031673+doomsower@users.noreply.github.com>",
   "license": "MIT",
   "private": true,
-  "type": "module",
+  "type": "commonjs",
   "module": "dist/index.mjs",
   "scripts": {
     "clean": "rm -rf dist",
@@ -26,6 +26,8 @@
     "@slack/types": "^2.14.0",
     "@slack/web-api": "^7.8.0",
     "@types/tmp": "^0.2.6",
+    "@typescript-eslint/eslint-plugin": "^8.33.0",
+    "@typescript-eslint/parser": "^8.33.0",
     "@vlad-yakovlev/telegram-md": "^2.0.0",
     "abitype": "^1.0.8",
     "date-fns": "^4.1.0",
@@ -40,12 +42,14 @@
   "devDependencies": {
     "@commitlint/cli": "^19.0.3",
     "@commitlint/config-conventional": "^19.0.3",
-    "@gearbox-protocol/eslint-config": "^2.0.0-next.2",
-    "@gearbox-protocol/prettier-config": "^2.0.0-next.0",
     "@types/jest": "^29.5.14",
     "@types/node": "^22.15.21",
     "esbuild": "^0.25.5",
     "eslint": "^8.57.0",
+    "eslint-config-prettier": "^10.1.5",
+    "eslint-plugin-prettier": "^5.4.0",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "eslint-plugin-unused-imports": "^4.1.4",
     "fetch-mock": "^12.5.2",
     "husky": "^9.0.11",
     "jest": "^29.7.0",
@@ -64,13 +68,6 @@
       "@commitlint/config-conventional"
     ]
   },
-  "eslintConfig": {
-    "root": true,
-    "extends": [
-      "@gearbox-protocol/eslint-config"
-    ]
-  },
-  "prettier": "@gearbox-protocol/prettier-config",
   "lint-staged": {
     "*.ts": [
       "eslint --fix",
