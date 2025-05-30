@@ -66,7 +66,6 @@ jest.mock("../src/safe-hashes/index.js", () => ({
 // Mock the SafeApiWrapper class
 jest.mock("../src/safe/index.js", () => {
   const actual = jest.requireActual("../src/safe/index.js");
-  // eslint-disable-next-line prefer-object-spread
   return Object.assign({}, actual, {
     SafeApiWrapper: jest.fn().mockImplementation(() => ({
       fetchAll: jest

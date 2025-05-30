@@ -142,7 +142,7 @@ export class ClassicAPI extends BaseApi implements ISafeAPI {
   }
 
   private get apiURL(): string {
-    let api = APIS[this.prefix.trim()];
+    const api = APIS[this.prefix.trim()];
     if (!api) {
       throw new Error(`no API URL for chain '${this.prefix.trim()}'`);
     }
