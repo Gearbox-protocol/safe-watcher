@@ -133,7 +133,7 @@ process.on("SIGTERM", () => {
 });
 
 // Only run if this file is being executed directly
-if (require.main === module) {
+if (import.meta.url === `file://${process.argv[1]}`) {
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
   run();
 }
