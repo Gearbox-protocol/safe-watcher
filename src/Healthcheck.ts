@@ -22,7 +22,10 @@ class Healthcheck {
         res.end(
           JSON.stringify({
             uptime: formatDuration(
-              intervalToDuration({ start: this.#start, end: new Date() }),
+              intervalToDuration({
+                start: this.#start,
+                end: new Date(),
+              }),
             ),
           }),
         );

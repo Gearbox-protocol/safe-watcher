@@ -29,7 +29,9 @@ describe("ClassicAPI", () => {
         return Promise.resolve({
           ok: true,
           status: 200,
-          headers: new Headers({ "Content-Type": "application/json" }),
+          headers: new Headers({
+            "Content-Type": "application/json",
+          }),
           json: () =>
             Promise.resolve({
               results: [
@@ -54,7 +56,9 @@ describe("ClassicAPI", () => {
         return Promise.resolve({
           ok: true,
           status: 200,
-          headers: new Headers({ "Content-Type": "application/json" }),
+          headers: new Headers({
+            "Content-Type": "application/json",
+          }),
           json: () =>
             Promise.resolve({
               safeTxHash: mockTxHash,

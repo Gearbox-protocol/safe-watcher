@@ -87,7 +87,10 @@ describe("reloadConfig", () => {
 
   test("reloadConfig should reload config when in ECS", async () => {
     (isECS as jest.Mock).mockReturnValue(true);
-    const initialConfig = { ...createMockConfig(), api: "fallback" as const };
+    const initialConfig = {
+      ...createMockConfig(),
+      api: "fallback" as const,
+    };
     const newConfig = {
       ...initialConfig,
       safeAddresses: [
@@ -111,7 +114,10 @@ describe("reloadConfig", () => {
 
   test("reloadConfig should not reload config because no changes when in ECS", async () => {
     (isECS as jest.Mock).mockReturnValue(true);
-    const initialConfig = { ...createMockConfig(), api: "fallback" as const };
+    const initialConfig = {
+      ...createMockConfig(),
+      api: "fallback" as const,
+    };
     mockAWSManager.loadConfig.mockResolvedValue(initialConfig);
     configManager = new ConfigManager(mockAWSManager as any);
     await configManager.initialize();
@@ -121,7 +127,10 @@ describe("reloadConfig", () => {
 
   test("reloadConfig should reload with same length but different safe addresses", async () => {
     (isECS as jest.Mock).mockReturnValue(true);
-    const initialConfig = { ...createMockConfig(), api: "fallback" as const };
+    const initialConfig = {
+      ...createMockConfig(),
+      api: "fallback" as const,
+    };
     const newConfig = {
       ...initialConfig,
       safeAddresses: [mockSafeAddressWithAlias] as [
@@ -142,7 +151,10 @@ describe("reloadConfig", () => {
 
   test("reloadConfig should reload with config with signers different name", async () => {
     (isECS as jest.Mock).mockReturnValue(true);
-    const initialConfig = { ...createMockConfig(), api: "fallback" as const };
+    const initialConfig = {
+      ...createMockConfig(),
+      api: "fallback" as const,
+    };
     const newConfig = {
       ...initialConfig,
       safeAddresses: initialConfig.safeAddresses,
@@ -160,7 +172,10 @@ describe("reloadConfig", () => {
 
   test("reloadConfig should handle reload errors", async () => {
     (isECS as jest.Mock).mockReturnValue(true);
-    const initialConfig = { ...createMockConfig(), api: "fallback" as const };
+    const initialConfig = {
+      ...createMockConfig(),
+      api: "fallback" as const,
+    };
     mockAWSManager.loadConfig.mockResolvedValue(initialConfig);
     mockAWSManager.reloadConfig.mockRejectedValue(new Error("Reload failed"));
     configManager = new ConfigManager(mockAWSManager as any);
@@ -188,7 +203,10 @@ describe("reloadConfig", () => {
 describe("hasConfigChanged", () => {
   test("hasConfigChanged should detect changes in safe addresses", async () => {
     (isECS as jest.Mock).mockReturnValue(true);
-    const initialConfig = { ...createMockConfig(), api: "fallback" as const };
+    const initialConfig = {
+      ...createMockConfig(),
+      api: "fallback" as const,
+    };
     const newConfig = {
       ...initialConfig,
       safeAddresses: [
@@ -212,7 +230,10 @@ describe("hasConfigChanged", () => {
 
   test("hasConfigChanged should detect changes in signers", async () => {
     (isECS as jest.Mock).mockReturnValue(true);
-    const initialConfig = { ...createMockConfig(), api: "fallback" as const };
+    const initialConfig = {
+      ...createMockConfig(),
+      api: "fallback" as const,
+    };
     const newConfig = {
       ...initialConfig,
       signers: {
@@ -232,7 +253,10 @@ describe("hasConfigChanged", () => {
 
   test("hasConfigChanged should detect changes in poll interval", async () => {
     (isECS as jest.Mock).mockReturnValue(true);
-    const initialConfig = { ...createMockConfig(), api: "fallback" as const };
+    const initialConfig = {
+      ...createMockConfig(),
+      api: "fallback" as const,
+    };
     const newConfig = {
       ...initialConfig,
       pollInterval: initialConfig.pollInterval + 1,

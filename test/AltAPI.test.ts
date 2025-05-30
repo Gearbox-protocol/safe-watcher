@@ -31,7 +31,9 @@ describe("AltAPI", () => {
         return Promise.resolve({
           ok: true,
           status: 200,
-          headers: new Headers({ "Content-Type": "application/json" }),
+          headers: new Headers({
+            "Content-Type": "application/json",
+          }),
           json: () =>
             Promise.resolve({
               results: [
@@ -72,7 +74,9 @@ describe("AltAPI", () => {
         return Promise.resolve({
           ok: true,
           status: 200,
-          headers: new Headers({ "Content-Type": "application/json" }),
+          headers: new Headers({
+            "Content-Type": "application/json",
+          }),
           json: () =>
             Promise.resolve({
               safeAddress: mockAddress,

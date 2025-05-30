@@ -62,7 +62,10 @@ export const defaultAWSConfigData = {
 export const createMockAWSConfig = (): SecretStored => defaultAWSConfigData;
 
 export const mockAddresses = [
-  { address: "rsk:0x1234567890123456789012345678901234567890", alias: "Alice" },
+  {
+    address: "rsk:0x1234567890123456789012345678901234567890",
+    alias: "Alice",
+  },
   { address: "eth:0x0987654321098765432109876543210987654321", alias: "Bob" },
   {
     address: "alg:0x1234567890abcdef1234567890abcdef12345678",
