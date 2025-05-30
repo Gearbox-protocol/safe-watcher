@@ -4,7 +4,7 @@
   "author": "doomsower <12031673+doomsower@users.noreply.github.com>",
   "license": "MIT",
   "private": true,
-  "type": "commonjs",
+  "type": "module",
   "module": "dist/index.mjs",
   "scripts": {
     "clean": "rm -rf dist",

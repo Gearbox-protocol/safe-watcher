@@ -4,7 +4,7 @@
  * @see https://prettier.io/docs/configuration
  * @type {import("prettier").Config}
  */
-const config = {
+export default {
   trailingComma: "all",
   tabWidth: 2,
   semi: true,
@@ -16,5 +16,3 @@ const config = {
   printWidth: 80,
   useTabs: false,
 };
-
-module.exports = config;

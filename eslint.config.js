@@ -1,15 +1,19 @@
-const eslintPluginPrettierRecommended = require("eslint-plugin-prettier/recommended");
+import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
+import typescriptEslintPlugin from "@typescript-eslint/eslint-plugin";
+import simpleImportSort from "eslint-plugin-simple-import-sort";
+import unusedImports from "eslint-plugin-unused-imports";
+import typescriptParser from "@typescript-eslint/parser";
 
-module.exports = [
+export default [
   {
     files: ["**/*.ts"],
     plugins: {
-      "@typescript-eslint": require("@typescript-eslint/eslint-plugin"),
-      "simple-import-sort": require("eslint-plugin-simple-import-sort"),
-      "unused-imports": require("eslint-plugin-unused-imports"),
+      "@typescript-eslint": typescriptEslintPlugin,
+      "simple-import-sort": simpleImportSort,
+      "unused-imports": unusedImports,
     },
     languageOptions: {
-      parser: require("@typescript-eslint/parser"), // Use TypeScript parser
+      parser: typescriptParser, // Use TypeScript parser
       parserOptions: {
         project: "./tsconfig.json", // Path to your tsconfig.json
       },
